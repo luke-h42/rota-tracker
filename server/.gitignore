@@ -1,0 +1,6 @@
+# keep node modules out, render installs them when run
+node_modules
+# Keep environment variables out of version control
+.env
+.env.e2e
+dist
