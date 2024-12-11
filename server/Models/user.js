@@ -9,8 +9,13 @@ const userSchema = new mongoose.Schema(
         shifts: [{ type: Schema.Types.ObjectId, ref: 'Shift' }], // Reference to Shift model if using shifts
         role: {
             type: String,
-            enum: ['user', 'admin', 'owner'], // Only 'user' or 'admin' are valid roles
+            enum: ['user', 'admin', 'owner'], 
             default: 'user', // Default role is 'user'
+          },
+        status: {
+            type: String,
+            enum: ['Active', 'Inactive'],
+            default: 'Active', 
           },
       },
   { timestamps: true } // Automatically add createdAt and updatedAt fields

@@ -4,7 +4,7 @@ export const roleCheck = (...allowedRoles) => {
     return (req, res, next) => {
         
         const { token } = req.cookies;
-        if (!token) return res.status(401).json({ message: 'Unauthorized' });
+        if (!token) return res.status(401).json({ message: 'Unauthorised' });
 
         jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
             if (err) return res.status(403).json({ message: 'Forbidden' });

@@ -72,8 +72,6 @@ export const getCompanyList = async (req, res) => {
   }
 }
 
-
-//incomplete
 export const registerAdmin = async (req, res) => {
   try {
     const { companyName, adminName, adminEmail, adminPassword } = req.body // Get info from frontend
@@ -134,14 +132,14 @@ export const registerUser = async (req, res) => {
   }
 
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized: Token is missing' });
+      return res.status(401).json({ error: 'Unauthorised: Token is missing' });
     }
 
     // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      return res.status(401).json({ error: 'Unauthorised: Invalid token' });
     }
 
     // Fetch the user from the database using the user id from the decoded token
@@ -184,12 +182,12 @@ export const getUserList = async (req, res) => {
   try {
     const { token } = req.cookies;
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized: Token is missing' });
+      return res.status(401).json({ error: 'Unauthorised: Token is missing' });
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      return res.status(401).json({ error: 'Unauthoried: Invalid token' });
     }
     // Fetch the user from the database using the user id from the decoded token
     const user = await User.findById(decoded.id);
@@ -197,7 +195,9 @@ export const getUserList = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
+    if (user.role !== 'admin' && user.role !== 'owner') {
+      return res.status(403).json({ error: 'Forbidden: Only admins can access the user list' });
+    }
     // Fetch the company associated with the logged-in user
     const company = await Company.findById(user.company);
 
@@ -205,10 +205,56 @@ export const getUserList = async (req, res) => {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-     const users = await User.find({ company: user.company }); // Fetch all companies from database
+    const users = await User.find({ company: user.company }).select('name email role status');
     res.json(users)
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 }
+
+export const getSingleUser = async (req, res) => {
+  const id = req.params.id.toString();
+  try {
+    const user = await User.findOne({ _id: id }).select('name email role status');
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Error fetching user information" });
+  }
+};
+
+
+export const updateSingleUser = async (req, res) => {
+  try {
+
+    const { userId, name, email, role, status } = req.body;
+
+ 
+    if (!userId || !name || !email || !role || !status) {
+      return res.status(400).json({ message: "UserId, name, email, role, and status are required" });
+    }
+
+
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { name, email, role, status },
+      { new: true } 
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+   
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};

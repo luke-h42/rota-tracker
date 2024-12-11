@@ -70,7 +70,7 @@ export const loginUser = async (req, res) => {
         const match = await comparePassword(password, user.password);
         if (match) {
             // Issue Access Token
-            const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+            const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '60m' });
 
             // Issue Refresh Token (longer expiration time)
             const refreshToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });

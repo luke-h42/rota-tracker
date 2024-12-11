@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { UserContext } from "../../context/userContext";
+import { UserContext } from "../../../context/userContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -64,9 +64,9 @@ export default function AdminCreateUsers({ onClose, fetchUsers }) {
         </h1>
 
         <form>
-          <div className="flex gap-2 items-center mb-2">
+          <div className="flex gap-2 items-center mb-2 justify-center text-center">
             <h1 className="text-sm sm:text-base">
-              You are adding a user to the company:{" "}
+              You are adding a user to the company: <br />
               <span className="underline">
                 {user?.companyName || "No company"}
               </span>
