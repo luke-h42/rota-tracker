@@ -16,6 +16,7 @@ import RegisterNewAdmin from "./ownerPages/RegisterNewAdmin";
 import AdminManageUsers from "./adminPages/AdminManageUsers";
 import AdminManageShifts from "./adminPages/AdminManageShifts";
 import AdminReporting from "./adminPages/AdminReporting";
+import Settings from "./pages/Settings";
 axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.withCredentials = true;
 
@@ -35,6 +36,7 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
         <Route element={<ProtectedRoutes allowedRoles={["admin", "owner"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />

@@ -1,6 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
@@ -14,6 +15,10 @@ export default function ProtectedRoutes({ allowedRoles }) {
         });
         setUser(response.data);
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          setIsTokenExpired(true);
+          Cookies.remove("jwtToken");
+        }
         setUser(null); // User not authenticated
       } finally {
         setIsLoading(false); // Stop loading

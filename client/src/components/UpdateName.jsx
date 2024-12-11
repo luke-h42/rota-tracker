@@ -1,92 +1,88 @@
 import { useState, useContext } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/userContext";
-
-export default function Login() {
-  const navigate = useNavigate();
-  const { setUser, refreshUserContext } = useContext(UserContext);
+export default function UpdateName({ onClose }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const loginUser = async (e) => {
+  const [newName, setNewName] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser, refreshUserContext } = useContext(UserContext);
+  const updateName = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { email, password } = data;
+
+    if (!newName || !password) {
+      toast.error("Please fill in all the fields.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      const { data } = await axios.post("/api/auth/login", {
-        email,
-        password,
-      });
-
+      const { data } = await axios.put(
+        "/api/users/change-name",
+        {
+          newName,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        // Set user context after successful login
-        setUser(data.user);
-        setData({
-          email: "",
-          password: "",
-        });
+        setNewName("");
+        setPassword("");
         setIsLoading(false);
-        toast.success("Login Successful");
-
-        // Refresh the user context to ensure data is up-to-date
+        toast.success("Name updated.");
         await refreshUserContext();
-
-        // Navigate to the dashboard after context update
-        navigate("/dashboard");
+        onClose();
       }
     } catch (error) {
+      toast.error(
+        error?.response?.data?.error || "Name update failed, please try again"
+      );
       setIsLoading(false);
-      toast.error("Login Failed");
     }
   };
-
   return (
-    <div className="flex items-center justify-center w-full text-black pt-[72px]">
-      <div className="bg-white rounded-lg px-8 py-6 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-center mb-4">Welcome Back!</h1>
+    <div className="flex items-center justify-center w-full text-black">
+      <div className="px-4 py-6 max-w-full w-full sm:max-w-md  max-h-[80vh] overflow-auto">
         <form>
           <div className="mb-4">
             <label
-              htmlFor="email"
-              name="email"
+              htmlFor="user-name"
+              name="user-name"
               className="block text-sm font-medium mb-2"
             >
-              Email
+              New Name
             </label>
             <input
-              type="email"
-              value={data.email}
-              onChange={(e) => setData({ ...data, email: e.target.value })}
-              id="email"
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              id="user-name"
               className="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500"
-              placeholder="Enter your email"
-              aria-label="Email address"
+              placeholder="Enter your new name"
+              aria-label="New Name"
               required
             />
           </div>
 
           <div className="mb-4">
             <label
-              htmlFor="password"
-              name="password"
+              htmlFor="user-password"
+              name="user-password"
               className="block text-sm font-medium mb-2"
             >
-              Password
+              Confirm Password
             </label>
             <input
               type="password"
-              value={data.password}
-              onChange={(e) => setData({ ...data, password: e.target.value })}
-              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              id="user-password"
               className="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500"
               placeholder="Enter your password"
               autoComplete="current-password"
@@ -97,12 +93,13 @@ export default function Login() {
 
           <button
             type="button"
-            name="login"
-            onClick={loginUser}
+            onClick={(e) => {
+              updateName(e);
+            }}
             disabled={isLoading}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-royal-blue-500 hover:bg-royal-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? "Updating name..." : "Update name"}
           </button>
         </form>
       </div>

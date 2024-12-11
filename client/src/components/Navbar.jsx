@@ -64,7 +64,6 @@ export default function Navbar() {
           <NavLink to="" className="text-xl">
             Logo
           </NavLink>
-          {user && user.name && <p>Welcome, {user.name}</p>}
         </div>
         {/* Mobile menu button  */}
 
@@ -157,6 +156,13 @@ export default function Navbar() {
                   </NavLink>
                 </>
               )}
+              <NavLink
+                to="/settings"
+                className="block text-xl py-2"
+                onClick={() => setMobileMenu(false)}
+              >
+                Settings
+              </NavLink>
               <button
                 className="block text-xl py-2"
                 onClick={() => {
@@ -261,7 +267,16 @@ export default function Navbar() {
                   </NavLink>
                 </>
               )}
-
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-black after:w-full after:scale-x-0 after:transition after:duration-300 after:origin-center ${
+                    isActive ? "after:scale-x-100" : "hover:after:scale-x-100"
+                  }`
+                }
+              >
+                Settings
+              </NavLink>
               <button
                 className={`relative text-xl  ${
                   isLoading ? "cursor-not-allowed" : ""

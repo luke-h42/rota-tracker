@@ -136,7 +136,7 @@ export default function AdminReporting() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full text-black pt-[72px]">
+    <div className="flex flex-col items-center justify-center w-full text-black">
       <div className="flex flex-col gap-2 px-4 py-6 max-w-full w-full ">
         <div className="flex flex-col justify-center items-center gap-2">
           <h1 className="text-2xl font-bold text-center mb-2">Reporting</h1>
@@ -274,19 +274,30 @@ export default function AdminReporting() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedShifts.map((shift) => (
-                    <tr key={shift.userId}>
-                      <td className="px-4 py-2 border-b whitespace-nowrap">
-                        {shift.name}
-                      </td>
-                      <td className="px-4 py-2 border-b whitespace-nowrap ">
-                        {shift.shiftCount}
-                      </td>
-                      <td className="px-4 py-2 border-b whitespace-nowrap ">
-                        {shift.totalShiftDuration}
+                  {sortedShifts.length > 0 ? (
+                    sortedShifts.map((shift) => (
+                      <tr key={shift.userId}>
+                        <td className="px-4 py-2 border-b whitespace-nowrap">
+                          {shift.name}
+                        </td>
+                        <td className="px-4 py-2 border-b whitespace-nowrap">
+                          {shift.shiftCount}
+                        </td>
+                        <td className="px-4 py-2 border-b whitespace-nowrap">
+                          {shift.totalShiftDuration}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="px-4 py-2 border-b text-center"
+                      >
+                        No Shifts in this period
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

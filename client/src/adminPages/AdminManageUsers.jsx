@@ -77,7 +77,7 @@ export default function AdminManageUsers() {
   });
 
   return (
-    <div className="flex items-center justify-center w-full text-black pt-[72px]">
+    <div className="flex items-center justify-center w-full text-black ">
       <div className="flex flex-col gap-2 px-4 py-6 max-w-full w-auto ">
         <div className="flex flex-col justify-center items-center gap-2">
           <h1 className="text-2xl font-bold text-center mb-2">Manage Users</h1>
@@ -127,12 +127,14 @@ export default function AdminManageUsers() {
                 </thead>
                 <tbody>
                   {sortedActiveUsers.map((user) => (
-                    <tr key={user._id}>
+                    <tr key={user._id} className="text-left">
                       <td className="px-4 py-2 border-b whitespace-nowrap w-1/3 min-w-48">
                         {user.name}
                       </td>
-                      <td className="px-4 py-2 border-b w-1/3">{user.email}</td>
-                      <td className="px-4 py-2 border-b w-1/6">
+                      <td className="px-4 py-2 border-b w-1/3 ">
+                        {user.email}
+                      </td>
+                      <td className="px-4 py-2 border-b w-1/6 ">
                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </td>
                       <td className="px-4 py-2 border-b w-1/6">
@@ -175,7 +177,7 @@ export default function AdminManageUsers() {
             {/* Inactive users table*/}
 
             <div className="pl-4">
-              <h1 className="text-xl  underline">Inactive Users</h1>
+              <h1 className="text-xl underline">Inactive Users</h1>
               <p>
                 These users are retained in the system, but they will not appear
                 when managing shifts.
@@ -204,7 +206,7 @@ export default function AdminManageUsers() {
                 </thead>
                 <tbody>
                   {sortedInactiveUsers.map((user) => (
-                    <tr key={user._id}>
+                    <tr key={user._id} className="text-left">
                       <td className="px-4 py-2 border-b whitespace-nowrap w-1/3 min-w-48">
                         {user.name}
                       </td>
@@ -269,7 +271,23 @@ export default function AdminManageUsers() {
                 onClick={() => setAddNewUserModal(false)}
                 className="text-gray-500"
               >
-                X
+                <svg
+                  className="w-8 h-8 text-black hover:text-gray-900"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18 17.94 6M18 18 6.06 6"
+                  />
+                </svg>
               </button>
             </div>
 
@@ -296,7 +314,23 @@ export default function AdminManageUsers() {
                 onClick={() => setEditUserModal(false)}
                 className="text-gray-500"
               >
-                X
+                <svg
+                  className="w-8 h-8 text-black hover:text-gray-900"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18 17.94 6M18 18 6.06 6"
+                  />
+                </svg>
               </button>
             </div>
 

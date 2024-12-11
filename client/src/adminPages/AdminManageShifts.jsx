@@ -90,7 +90,7 @@ export default function AdminManageShifts() {
   };
 
   return (
-    <div className="flex items-center justify-center w-full text-black pt-[72px]">
+    <div className="flex items-center justify-center w-full text-black">
       <div className="flex flex-col gap-2 px-4 py-6 max-w-full w-full ">
         <div className="flex flex-col justify-center items-center gap-2">
           <h1 className="text-2xl font-bold text-center mb-2">Manage Shifts</h1>
@@ -276,7 +276,7 @@ export default function AdminManageShifts() {
                             </div>
                           ))
                         ) : (
-                          <p>-</p>
+                          <p className="text-left">-</p>
                         )}
                       </div>
                     </div>
@@ -287,15 +287,7 @@ export default function AdminManageShifts() {
           )}
         </div>
       </div>
-      {/* <div className="flex justify-between md:justify-center gap-8 py-2">
-          <button
-            className="border border-royal-blue-500 p-2 rounded-md hover:bg-royal-blue-500 hover:text-white transition duration-200 ease-in-out"
-            onClick={() => setAddNewShiftModal(true)}
-          >
-            Add Shift
-          </button>
-        </div> */}
-      {/* Add New Shift Modal */}
+
       {addNewShiftModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"

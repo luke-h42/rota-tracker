@@ -15,9 +15,21 @@ export default function AdminCreateUsers({ onClose, fetchUsers }) {
   const registerUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { userName, userEmail, userPassword } = data;
+    let { userName, userEmail, userPassword } = data;
+    userEmail = userEmail.toLowerCase();
     if (!userName || !userEmail || !userPassword) {
       toast.error("Please fill in all the fields.");
+      setIsLoading(false);
+      return;
+    }
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(userEmail)) {
+      toast.error("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
+    if (userPassword.length < 6) {
+      toast.error("Passwords must be at least 6 characters");
       setIsLoading(false);
       return;
     }
@@ -59,10 +71,6 @@ export default function AdminCreateUsers({ onClose, fetchUsers }) {
   return (
     <div className="flex items-center justify-center w-full text-black">
       <div className="px-4 py-6 max-w-full w-full sm:max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          Register a new user
-        </h1>
-
         <form>
           <div className="flex gap-2 items-center mb-2 justify-center text-center">
             <h1 className="text-sm sm:text-base">

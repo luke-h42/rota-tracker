@@ -35,8 +35,19 @@ export default function RegisterNewAdmin() {
   const registerAdmin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { companyName, adminName, adminEmail, adminPassword } = data;
-
+    let { companyName, adminName, adminEmail, adminPassword } = data;
+    adminEmail = adminEmail.toLowerCase();
+    if (adminPassword.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      setIsLoading(false);
+      return;
+    }
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(adminEmail)) {
+      toast.error("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
     try {
       const { data } = await axios.post("/api/admin/register-admin", {
         companyName,
