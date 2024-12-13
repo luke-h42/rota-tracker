@@ -69,7 +69,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="inline-flex items-center p-2 w-14 h-14 justify-center text-sm text-black rounded-lg md:hidden hover:text-primary400"
+          className="inline-flex items-center p-2 w-14 h-14 justify-center text-sm text-royal-blue-500 rounded-lg md:hidden hover:text-primary400"
           ref={buttonRef}
           aria-controls="navbar-sticky"
           aria-expanded={mobileMenu ? "true" : "false"}

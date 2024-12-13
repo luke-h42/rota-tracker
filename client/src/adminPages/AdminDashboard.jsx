@@ -21,7 +21,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="flex items-center flex-col min-h-svh pt-[72px] bg-white text-black text-center">
+    <div className="flex items-center flex-col  pt-[72px] bg-white text-black text-center">
       <div className="mb-4">
         <h1 className="text-5xl ">Admin Dashboard</h1>
         {!!user && <h2 className="text-3xl ">Hi {user.name}!</h2>}

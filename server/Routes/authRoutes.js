@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors'
-import {test, registerUser, loginUser, getProfile, logoutUser, checkAuthenticated, adminRoute} from '../Controllers/authController.js'
+import {test, registerUser, loginUser, getProfile, logoutUser, checkAuthenticated, adminRoute, registerCompanyAndAdmin} from '../Controllers/authController.js'
 import { roleCheck } from '../helpers/roleCheck.js'
 
 const router = express.Router();
@@ -15,6 +15,7 @@ router.use(
 
 router.get('/', test)
 router.post('/register', registerUser)
+router.post('/get-started', registerCompanyAndAdmin)
 router.get('/authentication', checkAuthenticated)
 router.get('/admin', roleCheck('admin'), adminRoute)
 router.post('/login', loginUser)

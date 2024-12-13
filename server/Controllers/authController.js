@@ -2,7 +2,7 @@ import User from '../Models/user.js'
 import Company from '../Models/company.js'
 import { hashPassword, comparePassword } from '../helpers/auth.js'
 import jwt from 'jsonwebtoken'
-
+import {sendEmail} from '../helpers/emailHelper.js'
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -47,6 +47,54 @@ export const registerUser = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
+}
+
+export const registerCompanyAndAdmin = async ( req, res) => {
+    try {
+        const { companyName, adminName, adminEmail, adminPassword } = req.body;
+        if (!companyName || !adminName || !adminEmail || !adminPassword) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
+
+        // Ensure that adminEmail is unique and not null
+        const existingUser = await User.findOne({ email: adminEmail });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already in use' });
+        }
+        // Create the new company
+        const newCompany = new Company({ name: companyName });
+        await newCompany.save();
+    
+        // Hash the password for the new admin
+        const hashedPassword = await hashPassword(adminPassword)
+    
+        // Create a new user with 'admin' role for the company
+        const newAdmin = new User({
+          name: adminName,
+          email: adminEmail,
+          password: hashedPassword,
+          role: 'admin', // Set role as 'admin'
+          company: newCompany._id, // Associate the user with the new company
+        });
+        await newAdmin.save();
+    
+        // Add the new admin to the company's admin list
+        newCompany.admins.push(newAdmin._id); // Use _id of the new user
+        await newCompany.save();
+    
+        const subject = `Welcome to RotaTracker`
+        const text = `Hello ${adminName}, \n\nYour company, ${companyName}, has been successfully registered.`
+        try {
+            await sendEmail(adminEmail, subject, text);
+          } catch (emailError) {
+            console.error('Error sending confirmation email:', emailError);
+          }
+          res.status(201).json({ message: 'Company registered and confirmation email sent!' });
+
+      } catch (error) {
+        
+        res.status(500).json({ message: 'Error creating the company and admin.' });
+      }
 }
 
 

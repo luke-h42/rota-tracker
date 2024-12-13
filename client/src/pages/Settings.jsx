@@ -8,7 +8,7 @@ export default function Settings() {
   const [changeEmailModal, setChangeEmailModal] = useState(false);
   const [changePasswordModal, setChangePaswordModal] = useState(false);
   return (
-    <div className="flex items-center  flex-col min-h-screen pt-[72px]  bg-white text-center text-black">
+    <div className="flex items-center  flex-col pt-[72px]  bg-white text-center text-black">
       <div className="mb-4 max-w-md flex flex-col gap-4 p-2">
         <h1 className="text-5xl ">Settings</h1>
         <p>
@@ -19,7 +19,7 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
         <button
           className="bg-white text-black p-4 rounded-md hover:bg-royal-blue-500 w-full hover:text-white transition duration-200 ease-in-out border border-royal-blue-500"
           onClick={() => setChangeNameModal(true)}

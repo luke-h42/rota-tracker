@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,8 @@ import { UserContext } from "../../context/userContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUser, refreshUserContext } = useContext(UserContext);
+
+  const { user, setUser, refreshUserContext } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     email: "",

@@ -4,6 +4,7 @@ import 'dotenv/config';
 import authRouter from './Routes/authRoutes.js'
 import adminRouter from './Routes/adminRoutes.js'
 import shiftRouter from './Routes/shiftRoutes.js'
+import userRouter from './Routes/userRoutes.js'
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/shifts', shiftRouter)
+app.use('/api/users', userRouter)
 
 //server connection
 app.listen(5000, () => {

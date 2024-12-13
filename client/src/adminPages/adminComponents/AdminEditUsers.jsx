@@ -11,6 +11,7 @@ export default function AdminEditUsers({ onClose, fetchUsers, userId }) {
     name: "",
     email: "",
     status: "",
+    role: "",
   });
 
   useEffect(() => {
@@ -129,6 +130,26 @@ export default function AdminEditUsers({ onClose, fetchUsers, userId }) {
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
+                </div>
+                <div className="mb-4 flex flex-col gap-2 ">
+                  <div className="flex gap-4 items-center ">
+                    <label htmlFor="user-role">Choose user status:</label>
+                    <select
+                      id="user-role"
+                      name="role"
+                      value={data.role}
+                      onChange={handleChange}
+                      className="bg-gray-50 border border-gray-300  text-sm rounded-lg p-2.5 "
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div className="text-left">
+                    <span className="underline">Note:</span> By upgrading a user
+                    to an admin, they will have permissions to add users, add
+                    shifts, edit shifts and delete shifts.
+                  </div>
                 </div>
 
                 <button

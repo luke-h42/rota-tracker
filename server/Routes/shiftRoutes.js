@@ -14,7 +14,7 @@ router.use(
 
 router.get('/', test)
 router.post('/add-shift', roleCheck('admin', 'owner'), addShift) // Add single shift to database
-router.get('/shift-list', roleCheck('admin', 'owner'), getShiftList) // Get list of all shifts
+router.get('/shift-list', roleCheck('user','admin', 'owner'), getShiftList) // Get list of all shifts
 router.get('/shift/:id', roleCheck('admin', 'owner'), getSingleShift) // Get single shift information
 router.put('/shift/:id', roleCheck('admin', 'owner'), updateSingleShift) // Update single shift 
 router.delete('/shift/:id', roleCheck('admin', 'owner'), deleteSingleShift ) // Delete single shift

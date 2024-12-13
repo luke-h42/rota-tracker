@@ -17,39 +17,55 @@ import AdminManageUsers from "./adminPages/AdminManageUsers";
 import AdminManageShifts from "./adminPages/AdminManageShifts";
 import AdminReporting from "./adminPages/AdminReporting";
 import Settings from "./pages/Settings";
+import GetStarted from "./pages/GetStarted";
+import Footer from "./components/Footer";
 axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <UserContextProvider>
-      <Navbar />
-      <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
-      <Routes>
-        <Route path="/" element={<Home />} />
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          element={
-            <ProtectedRoutes allowedRoles={["user", "admin", "owner"]} />
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={["admin", "owner"]} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/manage-users" element={<AdminManageUsers />} />
-          <Route path="/manage-shifts" element={<AdminManageShifts />} />
-          <Route path="/reporting" element={<AdminReporting />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={["owner"]} />}>
-          <Route path="/register-company" element={<RegisterNewCompany />} />
-          <Route path="/register-new-admin" element={<RegisterNewAdmin />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/get-started" element={<GetStarted />} />
+            <Route
+              element={
+                <ProtectedRoutes allowedRoles={["user", "admin", "owner"]} />
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+            <Route
+              element={<ProtectedRoutes allowedRoles={["admin", "owner"]} />}
+            >
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/manage-users" element={<AdminManageUsers />} />
+              <Route path="/manage-shifts" element={<AdminManageShifts />} />
+              <Route path="/reporting" element={<AdminReporting />} />
+            </Route>
+            <Route element={<ProtectedRoutes allowedRoles={["owner"]} />}>
+              <Route
+                path="/register-company"
+                element={<RegisterNewCompany />}
+              />
+              <Route
+                path="/register-new-admin"
+                element={<RegisterNewAdmin />}
+              />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
     </UserContextProvider>
   );
 }

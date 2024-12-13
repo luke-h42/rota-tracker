@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isTokenExpired, setIsTokenExpired] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {

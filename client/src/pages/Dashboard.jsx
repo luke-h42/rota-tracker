@@ -122,7 +122,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="flex items-center flex-col min-h-screen pt-[72px]  bg-white text-center text-black">
+    <div className="flex items-center flex-col pt-[72px]  bg-white text-center text-black">
       {user && <h2 className="text-3xl">Hi {user.name}!</h2>}
 
       <div className="flex flex-col items-center">
@@ -136,6 +136,7 @@ function Dashboard() {
         />
       </div>
       <div>
+        {/* Prev, current, next week buttons */}
         <div className="flex gap-1 sm:gap-8 px-1 py-2 ">
           <button
             onClick={handlePrevWeek}

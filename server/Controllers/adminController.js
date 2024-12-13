@@ -124,7 +124,9 @@ export const registerUser = async (req, res) => {
     if (!userName || !userEmail || !userPassword ) {
       return res.status(400).json({ message: 'All fields are required.' });
   }
-
+  if (!userPassword || userPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
   // check if email already in use
   const existingUser = await User.findOne({ email: userEmail });
   if (existingUser) {
