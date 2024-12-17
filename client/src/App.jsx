@@ -22,7 +22,7 @@ import Footer from "./components/Footer";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 // axios.defaults.baseURL = "http://localhost:5000";
-axios.defaults.baseURL = "rota-tracker.vercel.app";
+axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
 axios.defaults.withCredentials = true;
 
 function App() {
