@@ -1,4 +1,5 @@
 import express from 'express';
+import 'dotenv/config';
 import cors from 'cors'
 import {  changeName, changeEmail,  changePassword , getSupport} from '../Controllers/userController.js'
 import { roleCheck } from '../helpers/roleCheck.js'
@@ -7,7 +8,7 @@ const router = express.Router();
 router.use(
     cors({
         credentials: true,
-        origin: 'http://localhost:5173'
+        origin: process.env.FRONTEND_URL
       
     })
 )

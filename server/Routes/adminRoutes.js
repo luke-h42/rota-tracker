@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors'
+import 'dotenv/config';
 import { test, registerCompany, registerAdmin, registerUser, getCompanyList, getUserList, getSingleUser, updateSingleUser} from '../Controllers/adminController.js'
-import { body } from 'express-validator';
 import { roleCheck } from '../helpers/roleCheck.js'
 
 const router = express.Router();
 router.use(
     cors({
         credentials: true,
-        origin: 'http://localhost:5173'
+        origin: process.env.FRONTEND_URL
       
     })
 )

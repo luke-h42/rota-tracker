@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors'
+import 'dotenv/config';
 import { test , addShift , getShiftList, getSingleShift, updateSingleShift, deleteSingleShift, getShiftsListDateRange, getShiftsDateRange, getShiftsForMonth, getUserShifts, sendShiftsEmail} from '../Controllers/shiftController.js'
 import { roleCheck } from '../helpers/roleCheck.js'
 
@@ -7,7 +8,7 @@ const router = express.Router();
 router.use(
     cors({
         credentials: true,
-        origin: 'http://localhost:5173'
+        origin: process.env.FRONTEND_URL
       
     })
 )
