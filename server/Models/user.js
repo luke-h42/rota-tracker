@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema(
             enum: ['Active', 'Inactive'],
             default: 'Active', 
           },
+          isVerified: { type: Boolean, default: false },
+          verificationToken: { type: String }
       },
   { timestamps: true } // Automatically add createdAt and updatedAt fields
 );

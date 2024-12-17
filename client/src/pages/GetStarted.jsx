@@ -63,13 +63,13 @@ export default function GetStarted() {
   };
 
   return (
-    <section className="flex flex-col gap-10 pt-[72px] bg-white ">
+    <section className="flex flex-col gap-10  md:pt-14 bg-gray-50">
       <div className="max-w-2xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-gray-700 sm:text-4xl">
           Get Started with{" "}
           <span className="text-royal-blue-500"> RotaTracker</span>
         </h2>
-        <p className="mt-4 text-lg text-gray-600">
+        <p className="mt-4 px-4 text-lg text-gray-600">
           Sign up today and make scheduling your team's work hours easier than
           ever. Get started by creating your company profile and adding an
           admin.
@@ -77,7 +77,7 @@ export default function GetStarted() {
         {!submitted ? (
           <>
             {" "}
-            <div className="mt-8 bg-white rounded-lg shadow-lg p-8">
+            <div className=" bg-white rounded-lg shadow-lg p-8">
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">
                 Create Your Company Account
               </h3>
@@ -87,7 +87,7 @@ export default function GetStarted() {
                   <div>
                     <label
                       htmlFor="companyName"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-medium text-gray-700 text-left"
                     >
                       Company Name
                     </label>
@@ -106,7 +106,7 @@ export default function GetStarted() {
                   <div>
                     <label
                       htmlFor="adminName"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-medium text-gray-700 text-left"
                     >
                       Admin Name
                     </label>
@@ -125,7 +125,7 @@ export default function GetStarted() {
                   <div>
                     <label
                       htmlFor="adminEmail"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-medium text-gray-700 text-left"
                     >
                       Admin Email
                     </label>
@@ -143,7 +143,7 @@ export default function GetStarted() {
                   <div>
                     <label
                       htmlFor="adminPassword"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-medium text-gray-700 text-left"
                     >
                       Admin Password
                     </label>

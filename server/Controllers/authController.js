@@ -2,7 +2,9 @@ import User from '../Models/user.js'
 import Company from '../Models/company.js'
 import { hashPassword, comparePassword } from '../helpers/auth.js'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 import {sendEmail} from '../helpers/emailHelper.js'
+import 'dotenv/config';
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -12,7 +14,7 @@ export const test = (req,res) => {
 //Register Endpoint
 export const registerUser = async (req, res) => {
     try {
-        const{name, email, password, role='user', company='test'} = req.body;
+        const{name, email, password} = req.body;
         // Check if name entered
         if(!name) {
             return res.json({
@@ -37,10 +39,11 @@ export const registerUser = async (req, res) => {
                 error: 'email already in use'
             })
         }
+
         const hashedPassword = await hashPassword(password)
         // Create user in dB
         const user = await User.create({
-            name, email, password : hashedPassword, role
+            name, email, password : hashedPassword,  verificationLink
         })
 
         return res.json(User)
@@ -67,7 +70,10 @@ export const registerCompanyAndAdmin = async ( req, res) => {
     
         // Hash the password for the new admin
         const hashedPassword = await hashPassword(adminPassword)
-    
+
+        // Create verification token
+        const verificationToken = jwt.sign({ email: adminEmail }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
         // Create a new user with 'admin' role for the company
         const newAdmin = new User({
           name: adminName,
@@ -75,6 +81,7 @@ export const registerCompanyAndAdmin = async ( req, res) => {
           password: hashedPassword,
           role: 'admin', // Set role as 'admin'
           company: newCompany._id, // Associate the user with the new company
+          verificationToken
         });
         await newAdmin.save();
     
@@ -83,9 +90,67 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         await newCompany.save();
     
         const subject = `Welcome to RotaTracker`
-        const text = `Hello ${adminName}, \n\nYour company, ${companyName}, has been successfully registered.`
+        const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <p>Hello ${adminName},</p>
+          
+          <p>We’re excited to welcome you to <strong>RotaTracker</strong>! Your company, <strong>${companyName}</strong>, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!</p>
+      
+          <p>Here's what you can do next:</p>
+          <ul>
+            <li><strong>Verify your account:</strong> Please click the following link to verify your email: <a href="${verificationLink}" style="color: #007bff;">Verify Email</a></li>
+            <li><strong>Login to your account:</strong> <a href="https://www.rotatracker.com/login" style="color: #007bff;">Login Here</a></li>
+            <li><strong>Create your first rota:</strong> Get started by adding employees, shifts, and schedules for better team coordination.</li>
+            <li><strong>Explore features:</strong> From shift swapping to real-time updates, RotaTracker has a lot to offer to help your company stay organized.</li>
+          </ul>
+      
+          <p>Need help? Our support team is here for you. Just reply to this email.</p>
+      
+          <p>We look forward to helping your team work smarter and more efficiently.</p>
+      
+          <p>Welcome aboard once again!</p>
+      
+          <p>Best regards,</p>
+          <p>The RotaTracker Team</p>
+      
+          <hr style="border: 1px solid #ddd;">
+      
+          <p><strong>Contact Us:</strong><br>
+            Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
+            Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+          </p>
+        </div>
+      `;
+      
+        const text = `
+        Hello ${adminName}, 
+        
+        We’re excited to welcome you to RotaTracker! Your company, ${companyName}, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!
+        
+        Here's what you can do next:
+        - Verify your account: Please click the following link to verify your email: ${verificationLink}
+        - Login to your account: https://www.rotatracker.com/login
+        - Create your first rota: Get started by adding employees, shifts, and schedules for better team coordination.
+        - Explore features: From shift swapping to real-time updates, RotaTracker has a lot to offer to help your company stay organized.
+        
+        Need help? Our support team is here for you. Just reply to this email.
+        
+        We look forward to helping your team work smarter and more efficiently.
+        
+        Welcome aboard once again!
+        
+        Best regards,
+        The RotaTracker Team
+        
+        Contact Us:
+        Support: rotatracker@gmail.com
+        Website: rotatracker.com
+        `;
+        
+        
+        
         try {
-            await sendEmail(adminEmail, subject, text);
+            await sendEmail(adminEmail, subject, text, html);
           } catch (emailError) {
             console.error('Error sending confirmation email:', emailError);
           }
@@ -96,6 +161,71 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         res.status(500).json({ message: 'Error creating the company and admin.' });
       }
 }
+
+export const verifyEmail = async( req, res) => {
+    const { token } = req.query;
+  
+    if (!token) {
+      return res.status(400).json({message: 'Invalid or missing token'});
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findOne({ email: decoded.email });
+      if (!user) {
+        return res.status(400).json({message: 'User not found'});
+      }
+      if (user.isVerified) {
+        return res.status(200).json({message: 'User already verified.'});
+      }
+      // Update user verification status
+      user.isVerified = true;
+      user.verificationToken = null;
+      await user.save();
+  
+      res.status(200).json({message: 'Email successfully verified. You can now log in.'});
+    } catch (err) {
+        if (err.message === 'jwt expired') {
+            return res.status(400).json({ error: 'Verification token has expired. Please request a new one.' });
+          }
+      res.status(400).json({message: 'Invalid or expired token'});
+    }
+  }
+
+export const resendVerificationEmail = async (req, res) => {
+const { email } = req.body;
+
+// Ensure that the email is provided
+if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+}
+
+// Check if the user exists in the database
+const user = await User.findOne({ email });
+
+if (!user) {
+    return res.status(400).json({ error: 'User not found' });
+}
+
+// If the user is already verified, return a message
+if (user.isVerified) {
+    return res.status(400).json({ error: 'User is already verified' });
+}
+
+// Create a new verification token
+const verificationToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+
+// Send the verification email again
+const html = `Please click the link below to verify your email: <a href="${verificationLink}">Verify Email</a>`;
+const text = `Please click the link below to verify your email: ${verificationLink}`;
+
+await sendEmail(user.email, 'Verify your email', text, html);
+
+res.json({ message: 'Verification email resent. Please check your inbox.' });
+};
+  
+
 
 
 // Login Endpoint (with Refresh Token)
@@ -113,7 +243,9 @@ export const loginUser = async (req, res) => {
         if (!user) {
             return res.json({ error: 'No user found' });
         }
-
+        if (!user.isVerified) {
+            return res.status(400).json({ error: 'Please verify your email first' });
+          }
         // Check if password matches
         const match = await comparePassword(password, user.password);
         if (match) {
@@ -140,6 +272,102 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export const resetPasswordLink = async (req, res) => {
+    const { email } = req.body;
+
+    // Check if email is provided
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'No user found with this email' });
+        }
+
+        // Generate the reset password token
+        const verificationToken = jwt.sign(
+            { email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        const verificationLink = `${process.env.FRONTEND_URL}/reset-password?token=${verificationToken}`;
+
+        // Email content (HTML version)
+        const html = `
+            <p>Please click the link below to change your password:</p>
+            <a href="${verificationLink}">Change Password</a>
+            <p>If this wasn't you, please get in touch with support.</p>
+            <p>Best regards,</p>
+            <p>The RotaTracker Team</p>
+      
+            <hr style="border: 1px solid #ddd;">
+      
+            <p><strong>Contact Us:</strong><br>
+             Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
+             Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+            </p>
+        `;
+
+        // Plain text version
+        const text = `
+            Please click the link below to change your password:
+            ${verificationLink}
+            If this wasn't you, please get in touch with support.
+            
+            Best regards,
+            The RotaTracker Team
+        
+            Contact Us:
+            Support: rotatracker@gmail.com
+            Website: rotatracker.com
+        `;
+
+        // Send the reset password email
+        await sendEmail(user.email, 'Password Reset Request', text, html);
+
+        // Send success response
+        return res.status(200).json({ message: 'Verification email sent. Please check your inbox.' });
+    } catch (error) {
+        console.error('Error in sending reset password email:', error);
+        return res.status(500).json({ error: 'Something went wrong, please try again later.' });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).json({ error: 'Token and new password are required' });
+    }
+
+    try {
+        // Verify the JWT token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ email: decoded.email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the password in the database
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: 'Password successfully updated' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong, please try again later.' });
+    }
+};
 
 // Refresh Token Endpoint
 export const refreshAccessToken = (req, res) => {

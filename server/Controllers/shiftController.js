@@ -2,6 +2,7 @@ import Company from '../Models/company.js'
 import User from '../Models/user.js'
 import Shift from '../Models/shifts.js'
 import jwt from 'jsonwebtoken'
+import {sendEmail} from '../helpers/emailHelper.js'
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -65,6 +66,20 @@ export const addShift = async (req, res) => {
 
 export const getShiftList = async (req, res) => { 
     try {
+        const { startDate, endDate } = req.query;
+
+        // Check if startDate and endDate are provided
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Start date and end date are required.' });
+        }
+
+        // Ensure the dates are proper Date objects
+        const parsedStartDate = new Date(startDate);
+        const parsedEndDate = new Date(endDate);
+
+        if (isNaN(parsedStartDate) || isNaN(parsedEndDate)) {
+            return res.status(400).json({ message: 'Invalid date format.' });
+        }
         const { token } = req.cookies;
         if (!token) {
           return res.status(401).json({ error: 'Unauthorised: Token is missing' });
@@ -84,7 +99,16 @@ export const getShiftList = async (req, res) => {
         if (!company) {
             return res.status(404).json({ error: 'Company not found' });
           }
-          const shifts = await Shift.find({ company: user.company }).select('user startDate startTime endTime breakTime shiftDuration').populate('user', 'name')
+ 
+          const shifts = await Shift.find({
+            company: user.company,
+            startDate: {
+                $gte: parsedStartDate,
+                $lte: parsedEndDate
+            }
+        })
+        .select('user startDate startTime endTime breakTime shiftDuration')
+        .populate('user', 'name');
           res.status(200).json(shifts)
 
 } catch (error) {
@@ -163,6 +187,58 @@ export const getSingleShift = async (req, res) => {
     }
   }
 
+// For Manage Shifts
+export const getShiftsListDateRange = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        // Check if startDate and endDate are provided
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Start date and end date are required.' });
+        }
+
+        // Ensure the dates are proper Date objects
+        const parsedStartDate = new Date(startDate);
+        const parsedEndDate = new Date(endDate);
+
+        if (isNaN(parsedStartDate) || isNaN(parsedEndDate)) {
+            return res.status(400).json({ message: 'Invalid date format.' });
+        }
+
+        // Token validation
+        const { token } = req.cookies;
+        if (!token) return res.status(401).json({ error: 'Unauthorized: Token is missing' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded) return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+
+        // Find the user and company
+        const user = await User.findById(decoded.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const company = await Company.findById(user.company);
+        if (!company) return res.status(404).json({ error: 'Company not found' });
+
+        // Fetch shifts within the given date range
+        const shifts = await Shift.find({
+            company: user.company,
+            startDate: {
+                $gte: parsedStartDate,
+                $lte: parsedEndDate
+            }
+        })
+        .select('user startDate startTime endTime breakTime shiftDuration')
+        .populate('user', 'name');
+
+        res.status(200).json(shifts);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// For reporting
 export const getShiftsDateRange = async (req, res ) => {
     try {
         const { startDate, endDate } = req.query
@@ -321,9 +397,25 @@ export const getShiftsForMonth = async (req, res) => {
 
 
 export const getUserShifts = async (req, res) => { 
+
+
   
         try {
         const { token } = req.cookies;
+        const { startDate, endDate } = req.query;
+
+        // Check if startDate and endDate are provided
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Start date and end date are required.' });
+        }
+
+        // Ensure the dates are proper Date objects
+        const parsedStartDate = new Date(startDate);
+        const parsedEndDate = new Date(endDate);
+
+        if (isNaN(parsedStartDate) || isNaN(parsedEndDate)) {
+            return res.status(400).json({ message: 'Invalid date format.' });
+        }
         if (!token) {
             return res.status(401).json({ error: 'Unauthorised: Token is missing' });
         }
@@ -333,7 +425,14 @@ export const getUserShifts = async (req, res) => {
             return res.status(401).json({ error: 'Unauthorised: Invalid token' });
         }
 
-        const shifts = await Shift.find({ user: decoded.id }).select(' startDate startTime endTime breakTime shiftDuration')
+        const shifts = await Shift.find({
+            user: decoded.id,
+            startDate: {
+                $gte: parsedStartDate,
+                $lte: parsedEndDate
+            }
+        })
+        .select(' startDate startTime endTime breakTime shiftDuration')
         res.status(200).json(shifts)
     
     } catch (error) {
@@ -341,3 +440,39 @@ export const getUserShifts = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 }
+
+export const sendShiftsEmail = async (req, res) => {
+    const { userIds } = req.body; // Getting the list of email addresses
+    const subject = `RotaTracker Notification`;
+    if (!userIds || userIds.length === 0) {
+        return res.status(400).json({ message: 'No userIds provided' });
+    }
+    // Loop through each email in the emailList to send the email
+    try {
+        const users = await User.find({ _id: { $in: userIds } }).select('name email');
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'No users found with the provided userIds' });
+        }
+        for (let user of users) {
+            const userEmail = user.email;
+            const userName = user.name;
+            const text = `Dear ${userName}, 
+
+This week's rota has now been completed, and it is available for you to review. Please log in to RotaTracker to check the updated schedule and ensure everything is in order.
+
+Best regards,
+The RotaTracker Team
+
+Contact Us:
+Support: rotatracker@gmail.com
+Website: rotatracker.com`;
+
+            // Send email to each user
+            await sendEmail(userEmail, subject, text);
+        }
+        res.status(201).json({ message: 'Emails sent to users successfully!' });
+    } catch (emailError) {
+        console.error('Error sending email:', emailError);
+        res.status(500).json({ message: 'Error sending emails' });
+    }
+};

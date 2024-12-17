@@ -57,8 +57,8 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="flex justify-center text-black  ">
-      <div className="fixed flex w-full px-2 py-2 items-center justify-between bg-white container mx-auto  ">
+    <nav className="flex items-center bg-white sticky top-0 z-10 w-full min-h-16 ">
+      <div className="flex w-full px-8 py-2 items-center justify-between  container mx-auto max-w-screen-xl ">
         {/* Logo Section */}
         <div className="flex space-x-12 items-center ">
           <NavLink to="" className="text-xl">

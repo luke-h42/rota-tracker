@@ -44,7 +44,7 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center w-full text-black pt-[72px] ">
+    <div className="flex items-center justify-center w-full text-black">
       <div className=" px-8 py-6 max-w-md w-full">
         <h1 className="text-2xl font-bold text-center mb-4 ">Welcome!</h1>
         <form>

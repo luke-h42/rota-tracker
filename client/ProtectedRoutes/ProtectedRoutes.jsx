@@ -1,13 +1,13 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
   const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [isTokenExpired, setIsTokenExpired] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -17,12 +17,13 @@ export default function ProtectedRoutes({ allowedRoles }) {
         setUser(response.data);
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          setIsTokenExpired(true);
-          Cookies.remove("jwtToken");
+          toast.error("Session expired, please log in again.");
+          navigate("/login"); // Redirect to login page
         }
+
         setUser(null); // User not authenticated
       } finally {
-        setIsLoading(false); // Stop loading
+        setIsLoading(false);
       }
     };
 

@@ -15,6 +15,7 @@ export default function AdminManageShifts() {
   const [addNewShiftModal, setAddNewShiftModal] = useState(false);
   const [editShiftModal, setEditShiftModal] = useState(false);
   const [deleteShiftModal, setDeleteShiftModal] = useState(false);
+  const [emailUsersModal, setEmailUsersModal] = useState(false);
   // Function to get the Monday of a given week
   const getMondayOfWeek = (date) => {
     const dayOfWeek = date.getDay();
@@ -24,24 +25,59 @@ export default function AdminManageShifts() {
     return monday;
   };
 
-  const fetchShifts = async () => {
+  const findShiftsInRange = async () => {
+    setIsLoading(true);
+    const startDateSearch = new Date(currentMonday);
+    const endDateSearch = new Date(currentMonday);
+    endDateSearch.setDate(currentMonday.getDate() + 6);
+    const formattedStartDate = startDateSearch.toISOString().split("T")[0];
+    const formattedEndDate = endDateSearch.toISOString().split("T")[0];
     try {
-      const response = await axios.get("/api/shifts/shift-list");
+      const response = await axios.get(
+        `/api/shifts/shift-date-range?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+      );
       setShifts(response.data);
       setIsLoading(false);
     } catch (error) {
-      toast.error("Error fetching shifts");
+      toast.error(
+        error?.response?.data?.error ||
+          "Error loading shifts, please try again."
+      );
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchShifts();
-  }, []);
+  // Send email to those on page
+  const sendShiftsEmail = async () => {
+    const userIds = shifts.map((shift) => shift.user._id);
+    const payload = { userIds };
+    try {
+      const response = await axios.post(
+        "/api/shifts/send-shifts-email",
+        payload,
+
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success("Email notification sent.");
+      setEmailUsersModal(false);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.error ||
+          "Error sending emails, please try again."
+      );
+      setIsLoading(false);
+    }
+  };
 
   const [currentMonday, setCurrentMonday] = useState(
     getMondayOfWeek(new Date())
   );
+  useEffect(() => {
+    findShiftsInRange();
+  }, [currentMonday]);
 
   // Function to handle the "Next Week" button click
   const handleNextWeek = () => {
@@ -283,6 +319,18 @@ export default function AdminManageShifts() {
                   );
                 })}
               </div>
+              <div className="flex flex-col max-w-md gap-2">
+                <p>
+                  Shifts are automatically displayed when users log in. Use the
+                  button below to send an email notification to users.
+                </p>
+                <button
+                  className="border hover:border-royal-blue-500 hover:bg-white hover:text-black p-2 rounded-md bg-royal-blue-500 text-white transition duration-200 ease-in-out"
+                  onClick={() => setEmailUsersModal(true)}
+                >
+                  Send Notification
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -333,7 +381,7 @@ export default function AdminManageShifts() {
                 setSelectedDay("");
                 setAddNewShiftModal(false);
               }}
-              fetchShifts={fetchShifts}
+              fetchShifts={findShiftsInRange}
               selectedDay={selectedDay}
             />
           </div>
@@ -385,13 +433,13 @@ export default function AdminManageShifts() {
                 setSelectedShift("");
                 setEditShiftModal(false);
               }}
-              fetchShifts={fetchShifts}
+              fetchShifts={findShiftsInRange}
               selectedShift={selectedShift}
             />
           </div>
         </div>
       )}
-      {/* Edit Shift Modal */}
+      {/* Delete Shift Modal */}
       {deleteShiftModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -437,9 +485,77 @@ export default function AdminManageShifts() {
                 setSelectedShift("");
                 setDeleteShiftModal(false);
               }}
-              fetchShifts={fetchShifts}
+              fetchShifts={findShiftsInRange}
               selectedShift={selectedShift}
             />
+          </div>
+        </div>
+      )}
+      {/* Send Email Modal */}
+      {emailUsersModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => {
+            setEmailUsersModal(false);
+          }}
+        >
+          <div
+            className="bg-white p-6 rounded-md max-w-lg w-full sm:max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Sending Emails</h2>
+              <button
+                className="p-1 ml-auto bg-transparent border-0 text-black opacity-50 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                onClick={() => {
+                  setEmailUsersModal(false);
+                }}
+              >
+                <svg
+                  className="w-8 h-8 text-black hover:text-gray-900"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18 17.94 6M18 18 6.06 6"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex flex-col items-center justify-center w-full text-black gap-4">
+              <div className="place-self-start text-left ">
+                You are sending an email notification to the following users:
+                {shifts.map((shift, index) => (
+                  <p key={index} className="text-center">
+                    {shift.user.name}
+                  </p>
+                ))}
+              </div>
+              <div className="w-full flex justify-between ">
+                <button
+                  className="bg-green-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-green-500 w-1/4 md:w-auto disabled:bg-gray-500 "
+                  onClick={sendShiftsEmail}
+                  disabled={isLoading}
+                >
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  className="bg-red-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-red-500 w-1/4 md:w-auto disabled:bg-gray-500"
+                  onClick={() => setEmailUsersModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -11,6 +11,20 @@ export default function AdminReporting() {
   const [yearSearch, setYearSearch] = useState("2024");
   const [isLoading, setIsLoading] = useState(false);
   const [shifts, setShifts] = useState([]);
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const findShiftsInRange = async () => {
     setIsLoading(true);
@@ -27,7 +41,7 @@ export default function AdminReporting() {
     }
     try {
       const response = await axios.get(
-        `/api/shifts/shift-date-range?startDate=${startDateSearch}&endDate=${endDateSearch}`
+        `/api/shifts/shift-date-range-aggregated?startDate=${startDateSearch}&endDate=${endDateSearch}`
       );
       setShifts(response.data);
       setIsLoading(false);
@@ -69,30 +83,13 @@ export default function AdminReporting() {
     setYearSearch(newYear);
   };
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - 2024 + 2 },
     (_, i) => 2024 + i
   );
 
-  const sortedShifts = shifts.sort((a, b) => {
-    return a.name.localeCompare(b.name);
-  });
+  const sortedShifts = shifts.sort((a, b) => a.name.localeCompare(b.name));
 
   useEffect(() => {
     if (startDateSearch && endDateSearch) {
@@ -277,7 +274,7 @@ export default function AdminReporting() {
                   {sortedShifts.length > 0 ? (
                     sortedShifts.map((shift) => (
                       <tr key={shift.userId}>
-                        <td className="px-4 py-2 border-b whitespace-nowrap">
+                        <td className="px-4 py-2 border-b whitespace-nowrap text-left">
                           {shift.name}
                         </td>
                         <td className="px-4 py-2 border-b whitespace-nowrap">

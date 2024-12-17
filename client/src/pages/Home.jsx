@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center gap-10 pt-[72px] bg-white ">
-      <div className="bg-gray-50  p-8 mb-4 rounded-lg ">
+    <div className="flex flex-col items-center gap-10  ">
+      <div className="bg-gray-50 p-8 mb-4 rounded-lg w-full ">
         {/* Header Section */}
-        <header className="text-center mb-16">
+        <header className="text-center mb-4">
           <h1 className="text-4xl font-bold text-royal-blue-500 leading-tight md:text-5xl">
             RotaTracker
           </h1>
@@ -15,6 +15,34 @@ export default function Home() {
         </header>
 
         <div className="max-w-6xl mx-auto ">
+          {/* Call to action Section */}
+          <section className="text-center bg-gray-100 py-8 px-4 rounded-lg shadow-inner mb-8 max-w-s">
+            <p className="text-2xl font-semibold text-gray-800 mb-4">
+              Simplified Scheduling. Better Team Coordination. Efficient Hour
+              Reporting.
+            </p>
+            <p className="text-lg text-gray-600 mb-6">
+              At RotaTracker, we're here to help make managing your team's
+              schedule and reporting work hours a breeze. Say goodbye to
+              spreadsheets and endless emails—streamline your workflow with our
+              intuitive, user-friendly platform today!
+            </p>
+            <div className="flex justify-center items-center gap-6">
+              <Link to="/get-started">
+                <button className="px-8 py-3 bg-royal-blue-500 text-white text-lg rounded-lg shadow-md hover:bg-royal-blue-600 transition duration-300 ease-in-out">
+                  Sign Up
+                </button>
+              </Link>
+              <Link to="/login">
+                <button className="px-8 py-3 bg-gray-600 text-white text-lg rounded-lg shadow-md hover:bg-gray-700 transition duration-300 ease-in-out">
+                  Log In
+                </button>
+              </Link>
+            </div>
+          </section>
+          <div className="flex items-center justify-center text-3xl font-bold text-royal-blue-500 leading-tight md:text-5xl mb-6">
+            <h1>RotaTracker Features</h1>
+          </div>
           {/* Manager Section */}
           <section className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -62,7 +90,7 @@ export default function Home() {
           </section>
 
           {/* Employee Section */}
-          <section className="mb-16">
+          <section className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 ease-in-out">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -93,32 +121,18 @@ export default function Home() {
               </div>
             </div>
           </section>
-
-          {/* Call to action Section */}
-          <section className="text-center bg-gray-100 py-8 px-4 rounded-lg shadow-inner mt-8">
-            <p className="text-2xl font-semibold text-gray-800 mb-4">
-              Simplified Scheduling. Better Team Coordination. Efficient Hour
-              Reporting.
-            </p>
-            <p className="text-lg text-gray-600 mb-6">
-              At RotaTracker, we're here to help make managing your team's
-              schedule and reporting work hours a breeze. Say goodbye to
-              spreadsheets and endless emails—streamline your workflow with our
-              intuitive, user-friendly platform today!
-            </p>
-            <div className="flex justify-center items-center gap-6">
-              <Link to="/get-started">
-                <button className="px-8 py-3 bg-royal-blue-500 text-white text-lg rounded-lg shadow-md hover:bg-royal-blue-600 transition duration-300 ease-in-out">
-                  Sign Up
-                </button>
-              </Link>
-              <Link to="/login">
-                <button className="px-8 py-3 bg-gray-600 text-white text-lg rounded-lg shadow-md hover:bg-gray-700 transition duration-300 ease-in-out">
-                  Log In
-                </button>
-              </Link>
-            </div>
-          </section>
+          <div className="flex justify-center items-center gap-6">
+            <Link to="/get-started">
+              <button className="px-8 py-3 bg-royal-blue-500 text-white text-lg rounded-lg shadow-md hover:bg-royal-blue-600 transition duration-300 ease-in-out">
+                Sign Up
+              </button>
+            </Link>
+            <Link to="/login">
+              <button className="px-8 py-3 bg-gray-600 text-white text-lg rounded-lg shadow-md hover:bg-gray-700 transition duration-300 ease-in-out">
+                Log In
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -19,22 +19,26 @@ import AdminReporting from "./adminPages/AdminReporting";
 import Settings from "./pages/Settings";
 import GetStarted from "./pages/GetStarted";
 import Footer from "./components/Footer";
+import VerifyEmail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
 axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <UserContextProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen ">
         <Navbar />
         <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
-        <div className="flex-grow">
+        <div className=" flex-grow  ">
           <Routes>
             <Route path="/" element={<Home />} />
-
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/login" element={<Login />} />
             <Route path="/get-started" element={<GetStarted />} />
+
             <Route
               element={
                 <ProtectedRoutes allowedRoles={["user", "admin", "owner"]} />

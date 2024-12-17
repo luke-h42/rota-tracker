@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useDebugValue } from "react";
 import { UserContext } from "../../context/userContext";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -10,28 +10,6 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [aggregatedHours, setAggregatedHours] = useState(0);
   const [selectedTab, setSelectedTab] = useState("userShifts");
-  // Fetch user shifts
-  const fetchUserShifts = async () => {
-    try {
-      const response = await axios.get("/api/shifts/user-shifts");
-      setUserShifts(response.data);
-      setIsLoading(false);
-    } catch (error) {
-      toast.error("Error fetching user shifts");
-      setIsLoading(false);
-    }
-  };
-
-  const fetchTeamShifts = async () => {
-    try {
-      const response = await axios.get("/api/shifts/shift-list");
-      setTeamShifts(response.data);
-      setIsLoading(false);
-    } catch (error) {
-      toast.error("Error fetching team shifts");
-      setIsLoading(false);
-    }
-  };
 
   // Get Monday of the week for a given date
   const getMondayOfWeek = (date) => {
@@ -97,14 +75,44 @@ function Dashboard() {
     setCurrentMonday(monday);
   };
 
-  // Fetch shifts on component mount and when currentMonday changes
-  useEffect(() => {
-    if (selectedTab === "userShifts") {
-      fetchUserShifts();
-    } else if (selectedTab === "teamShifts") {
-      fetchTeamShifts();
+  // Fetch user shifts
+  const fetchUserShifts = async () => {
+    setIsLoading(true);
+    const startDateSearch = new Date(currentMonday);
+    const endDateSearch = new Date(currentMonday);
+    endDateSearch.setDate(currentMonday.getDate() + 6);
+    const formattedStartDate = startDateSearch.toISOString().split("T")[0];
+    const formattedEndDate = endDateSearch.toISOString().split("T")[0];
+    try {
+      const response = await axios.get(
+        `/api/shifts/user-shifts?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+      );
+      setUserShifts(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Error fetching user shifts");
+      setIsLoading(false);
     }
-  }, [selectedTab]);
+  };
+
+  const fetchTeamShifts = async () => {
+    setIsLoading(true);
+    const startDateSearch = new Date(currentMonday);
+    const endDateSearch = new Date(currentMonday);
+    endDateSearch.setDate(currentMonday.getDate() + 6);
+    const formattedStartDate = startDateSearch.toISOString().split("T")[0];
+    const formattedEndDate = endDateSearch.toISOString().split("T")[0];
+    try {
+      const response = await axios.get(
+        `/api/shifts/shift-list?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+      );
+      setTeamShifts(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Error fetching team shifts");
+      setIsLoading(false);
+    }
+  };
 
   // Recalculate aggregated hours when shifts or currentMonday changes
   useEffect(() => {
@@ -112,6 +120,11 @@ function Dashboard() {
       calculateAggregatedHours(userShifts, currentMonday);
     }
   }, [userShifts, currentMonday]);
+
+  useEffect(() => {
+    fetchUserShifts();
+    fetchTeamShifts();
+  }, [currentMonday]);
 
   // Generate an array of the 7 days of the current week starting from Monday
   const daysOfWeek = [];
@@ -122,7 +135,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="flex items-center flex-col pt-[72px]  bg-white text-center text-black">
+    <div className="flex items-center flex-col md:pt-6 bg-white text-center text-black">
       {user && <h2 className="text-3xl">Hi {user.name}!</h2>}
 
       <div className="flex flex-col items-center">

@@ -2,6 +2,8 @@ import Company from '../Models/company.js'
 import User from '../Models/user.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import {sendEmail} from '../helpers/emailHelper.js'
+import 'dotenv/config';
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -89,7 +91,7 @@ export const registerAdmin = async (req, res) => {
   if (!company) {
   return res.status(404).json({ error: 'Company not found' });
     }
-  console.log(company)
+
   // Hash the password for the new admin
   const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
@@ -161,19 +163,88 @@ export const registerUser = async (req, res) => {
     // Hash the password for the new user
     const hashedPassword = await bcrypt.hash(userPassword, 10);
 
+    const verificationToken = jwt.sign({ email: userEmail }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+
     // Create a new user with 'user' role and associate with the company
     const newUser = new User({
       name: userName,
       email: userEmail,
       password: hashedPassword,
-      role: 'user', // Default role as 'user'
       company: company._id, // Associate the new user with the same company
+      verificationToken,
     });
 
     // Save the new user to the database
     await newUser.save();
+    const subject = `Welcome to RotaTracker`
+    const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <p>Hello ${userName},</p>
+  
+      <p>We’re excited to let you know that you've been added to the team at <strong>${company.name}</strong> on <strong>RotaTracker</strong>! You're now all set to manage your shifts and stay updated with the team's schedule.</p>
+  
+      <p><strong>First, verify your account by clicking the link:</strong> <a href="${verificationLink}" style="color: #007bff;">Verify Email</a></p>
+  
+      <p>Here's what you can do next:</p>
+      <ul>
+        <li><strong>Login to your account:</strong> <a href="https://www.rotatracker.com/login" style="color: #007bff;">Login Here</a></li>
+        <li><strong>Access your personal schedule:</strong> Keep track of your shifts and stay organized.</li>
+        <li><strong>Check your shifts:</strong> View the details of your upcoming shifts and plan your time accordingly.</li>
+        <li><strong>View the team’s schedule:</strong> Stay in the loop by seeing the full team’s rota and schedule.</li>
+      </ul>
+  
+      <p>Need help? Our support team is here for you. Just reply to this email.</p>
+  
+      <p>We look forward to helping you stay organized and on top of your schedule!</p>
+  
+      <p>Welcome aboard!</p>
+  
+      <p>Best regards,</p>
+      <p>The RotaTracker Team</p>
+  
+      <hr style="border: 1px solid #ddd;">
+  
+      <p><strong>Contact Us:</strong><br>
+        Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
+        Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+      </p>
+    </div>
+  `;
+  
+    const text = `Hello ${userName}, 
 
-    res.status(201).json({ message: 'User registered successfully!' });
+We’re excited to let you know that you've been added to the team at ${company.name} on RotaTracker! You're now all set to manage your shifts and stay updated with the team's schedule.
+
+First, verify your account by clicking the link: ${verificationLink}
+
+Here's what you can do next:
+- Login to your account: [https://www.rotatracker.com/login] 
+– Access your personal schedule and keep track of your shifts.
+- Check your shifts: View the details of your upcoming shifts and plan your time accordingly.
+- View the team’s schedule: Stay in the loop by seeing the full team’s rota and schedule.
+
+Need help? Our support team is here for you. Just reply to this email.
+
+We look forward to helping you stay organized and on top of your schedule!
+
+Welcome aboard!
+
+Best regards,
+The RotaTracker Team
+
+Contact Us:
+Support: rotatracker@gmail.com
+Website: rotatracker.com`
+    
+    
+    try {
+        await sendEmail(userEmail, subject, text, html);
+      } catch (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+      }
+      res.status(201).json({ message: 'User registered and confirmation email sent!' });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
