@@ -21,8 +21,9 @@ import GetStarted from "./pages/GetStarted";
 import Footer from "./components/Footer";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
-// axios.defaults.baseURL = "http://localhost:5000";
-axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
+import Subscribe from "./pages/Subscribe";
+axios.defaults.baseURL = "http://localhost:5000";
+// axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
       <div className="flex flex-col min-h-screen ">
         <Navbar />
         <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
-        <div className=" flex-grow  ">
+        <div className="flex-grow ">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
@@ -47,6 +48,7 @@ function App() {
             >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/subscribe" element={<Subscribe />} />
             </Route>
             <Route
               element={<ProtectedRoutes allowedRoles={["admin", "owner"]} />}

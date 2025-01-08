@@ -10,6 +10,7 @@ export default function GetStarted() {
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+  const [confirmAdminPassword, setConfirmAdminPassword] = useState("");
   const [submitted, hasSubmitted] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +19,19 @@ export default function GetStarted() {
     const lowerCaseEmail = adminEmail.toLowerCase();
     // Basic form validation
     setIsLoading(true);
-    if (!companyName || !adminName || !adminEmail || !adminPassword) {
+    if (
+      !companyName ||
+      !adminName ||
+      !adminEmail ||
+      !adminPassword ||
+      !confirmAdminPassword
+    ) {
       toast.error("All fields are required.");
+      return;
+    }
+    if (adminPassword != confirmAdminPassword) {
+      toast.error("Passwords do not match");
+      setIsLoading(false);
       return;
     }
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -63,7 +75,7 @@ export default function GetStarted() {
   };
 
   return (
-    <section className="flex flex-col gap-10  md:pt-14 bg-gray-50">
+    <section className="flex flex-col gap-10 md:pt-14 bg-gray-50">
       <div className="max-w-2xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-gray-700 sm:text-4xl">
           Get Started with{" "}
@@ -155,6 +167,24 @@ export default function GetStarted() {
                       onChange={(e) => setAdminPassword(e.target.value)}
                       required
                       placeholder="Enter your Admin's password..."
+                      className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:border-royal-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="confirmAdminPassword"
+                      className="block text-sm font-medium text-gray-700 text-left"
+                    >
+                      Confirm Admin Password
+                    </label>
+                    <input
+                      type="password"
+                      id="confirmAdminPassword"
+                      name="confirmAdminPassword"
+                      value={confirmAdminPassword}
+                      onChange={(e) => setConfirmAdminPassword(e.target.value)}
+                      required
+                      placeholder="Confirm your Admin's password..."
                       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:border-royal-blue-500"
                     />
                   </div>

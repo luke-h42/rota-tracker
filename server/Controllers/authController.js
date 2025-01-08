@@ -1,10 +1,15 @@
 import User from '../Models/user.js'
 import Company from '../Models/company.js'
+import Subscription from '../Models/subscription.js'
 import { hashPassword, comparePassword } from '../helpers/auth.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import {sendEmail} from '../helpers/emailHelper.js'
+import { sendTestEmail } from '../helpers/testEmail.js'
 import 'dotenv/config';
+
+const useTestEmails = process.env.USE_TEST_EMAILS === 'true';
+
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -64,10 +69,30 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use' });
         }
-        // Create the new company
+
+         // Create the new company
         const newCompany = new Company({ name: companyName });
         await newCompany.save();
-    
+
+        // Create trial subscription
+        const trialSubscription = new Subscription({
+            company:  newCompany._id,  // Will link the subscription to the company after it's created
+            plan: 'trial',  // Assign the trial plan
+            startDate: new Date(),
+            endDate: null,  // Trial ends in 14 days
+            trialEndDate: new Date(new Date().setDate(new Date().getDate() + 14)),
+            status: 'active',
+            paymentStatus: 'pending',
+            price: 0,  // Trial is free, no payment required
+            usersLimit: 5,  // Set the users limit to 5 for the trial
+        });
+
+        await trialSubscription.save();
+      
+        // Update company to include trial 
+        newCompany.subscription = trialSubscription._id;  // Set the company in the subscription
+        await newCompany.save();  // Save the updated subscription
+
         // Hash the password for the new admin
         const hashedPassword = await hashPassword(adminPassword)
 
@@ -150,14 +175,21 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         
         
         try {
-            await sendEmail(adminEmail, subject, text, html);
+
+            if (useTestEmails) {
+                // Use test email
+                await sendTestEmail(adminEmail, subject, text, html);
+            } else {
+                // Use real email
+                await sendEmail(adminEmail, subject, text, html);
+            }
           } catch (emailError) {
             console.error('Error sending confirmation email:', emailError);
           }
           res.status(201).json({ message: 'Company registered and confirmation email sent!' });
 
       } catch (error) {
-        
+        console.log(error)
         res.status(500).json({ message: 'Error creating the company and admin.' });
       }
 }
@@ -431,7 +463,7 @@ export const getProfile = async (req, res) => {
             }
 
             // Now, fetch the company name using the companyId from the user
-            const company = await Company.findById(user.company);
+            const company = await Company.findById(user.company).populate('subscription');
             
             // If the user is the owner (no company listed)
             if (user.role === 'owner') {
@@ -439,6 +471,7 @@ export const getProfile = async (req, res) => {
                     name: user.name,
                     companyName: null, // Owner doesn't have a company
                     role: user.role,
+                    subscription: null,
                 });
             }
 
@@ -451,6 +484,9 @@ export const getProfile = async (req, res) => {
                 name: user.name,
                 companyName: company.name,
                 role: user.role,
+                subscriptionStatus: company.subscription.status || null,
+                trialEndDate: company.subscription.trialEndDate || null,
+                subscriptionPlan: company.subscription.plan || null,
             });
         } catch (err) {
 

@@ -3,7 +3,11 @@ import User from '../Models/user.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {sendEmail} from '../helpers/emailHelper.js'
+import { sendTestEmail } from '../helpers/testEmail.js'
 import 'dotenv/config';
+
+const useTestEmails = process.env.USE_TEST_EMAILS === 'true';
+
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -126,13 +130,13 @@ export const registerUser = async (req, res) => {
     if (!userName || !userEmail || !userPassword ) {
       return res.status(400).json({ message: 'All fields are required.' });
   }
-  if (!userPassword || userPassword.length < 6) {
+  if ( userPassword.length < 6) {
     return res.status(400).json({ error: 'Password must be at least 6 characters long' });
   }
   // check if email already in use
   const existingUser = await User.findOne({ email: userEmail });
   if (existingUser) {
-      return res.status(200).json({ error: 'Email already in use' });
+      return res.status(409).json({ error: 'Email already in use' });
   }
 
     if (!token) {
@@ -154,10 +158,30 @@ export const registerUser = async (req, res) => {
     }
 
     // Fetch the company associated with the logged-in user
-    const company = await Company.findById(user.company);
+    const company = await Company.findById(user.company).populate('subscription');
 
     if (!company) {
       return res.status(404).json({ error: 'Company not found' });
+    }
+
+    let userLimit = 5; // Default to Basic plan including trial
+    if (company.subscription.plan === 'Standard') {
+      userLimit = 20; // Standard plan allows 20 users
+    } else if (company.subscription.plan === 'Premium') {
+      userLimit = 100; // Premium plan allows 100 users
+    }
+     else if (company.subscription.plan === 'Pro') {
+      userLimit = Infinity; // Pro plan allows unlimited users
+    }
+
+    // Get the number of users already in the company
+    const userCount = await User.countDocuments({ company: company._id });
+
+    // Check if the company has reached the user limit for its subscription plan
+    if (userCount >= userLimit) {
+      return res.status(400).json({
+        error: `The company has reached the maximum number of users for the ${company.subscription.plan} plan (${userLimit} users). Please upgrade your plan to add more users.`
+      });
     }
 
     // Hash the password for the new user
@@ -177,6 +201,7 @@ export const registerUser = async (req, res) => {
 
     // Save the new user to the database
     await newUser.save();
+
     const subject = `Welcome to RotaTracker`
     const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -239,7 +264,16 @@ Website: rotatracker.com`
     
     
     try {
-        await sendEmail(userEmail, subject, text, html);
+   
+        if (useTestEmails) {
+          // Use test email
+          console.log('Using test email')
+          await sendTestEmail(userEmail, subject, text, html);
+        } else {
+          // Use real email
+          console.log('Using real email')
+          await sendEmail(userEmail, subject, text, html);
+        }
       } catch (emailError) {
         console.error('Error sending confirmation email:', emailError);
       }

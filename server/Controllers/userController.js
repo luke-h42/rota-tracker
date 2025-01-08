@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken'
 import validator from 'validator';
 import bcrypt from 'bcrypt'
 import {sendEmail} from '../helpers/emailHelper.js'
+import { sendTestEmail } from '../helpers/testEmail.js'
+import 'dotenv/config';
+
+const useTestEmails = process.env.USE_TEST_EMAILS === 'true';
 
 export const changeName = async (req, res) => {
     try {
@@ -167,7 +171,7 @@ export const getSupport = async (req, res) => {
   
       const user = await User.findById(decoded.id);
       const userEmail = user.email
-      const supportEmail = 'dropletwebdesign@gmail.com'
+      const supportEmail = process.env.SUPPORT_EMAIL
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
@@ -189,8 +193,18 @@ Best Regards,
 The RotaTracker team.
 `
 try {
-  await sendEmail(userEmail, supportSubject, text);
-  await sendEmail(supportEmail, supportSubject, supportText)
+ 
+  if (useTestEmails) {
+      // Use test email
+      await sendTestEmail(userEmail, supportSubject, supportText);
+      await sendTestEmail(supportEmail, supportSubject, supportText);
+      
+  } else {
+      // Use real email
+      await sendEmail(userEmail, supportSubject, supportText);
+      await sendEmail(supportEmail, supportSubject, supportText)
+  }
+  
 } catch (emailError) {
   console.error('Error sending confirmation email:', emailError);
   return res.status(500).json({ error: 'Error sending confirmation email' });

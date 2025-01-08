@@ -19,6 +19,9 @@ export function UserContextProvider({ children }) {
             name: data.name,
             companyName: data.companyName,
             role: data.role,
+            subscriptionStatus: data.subscriptionStatus,
+            trialEndDate: data.trialEndDate,
+            subscriptionPlan: data.subscriptionPlan,
           });
         }
       } catch (error) {
@@ -40,6 +43,9 @@ export function UserContextProvider({ children }) {
           name: data.name,
           companyName: data.companyName,
           role: data.role,
+          subscriptionStatus: data.subscriptionStatus,
+          trialEndDate: data.trialEndDate,
+          subscriptionPlan: data.subscriptionPlan,
         });
       }
     } catch (error) {

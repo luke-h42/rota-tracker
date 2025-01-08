@@ -10,15 +10,21 @@ export default function AdminCreateUsers({ onClose, fetchUsers }) {
     userName: "",
     userEmail: "",
     userPassword: "",
+    confirmUserPassword: "",
   });
 
   const registerUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    let { userName, userEmail, userPassword } = data;
+    let { userName, userEmail, userPassword, confirmUserPassword } = data;
     userEmail = userEmail.toLowerCase();
-    if (!userName || !userEmail || !userPassword) {
+    if (!userName || !userEmail || !userPassword || !confirmUserPassword) {
       toast.error("Please fill in all the fields.");
+      setIsLoading(false);
+      return;
+    }
+    if (userPassword != confirmUserPassword) {
+      toast.error("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -133,6 +139,26 @@ export default function AdminCreateUsers({ onClose, fetchUsers }) {
               id="user-password"
               className="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500"
               placeholder="Enter the user password"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="confirm-user-password"
+              name="confirm-user-password"
+              className="block text-sm font-medium mb-2"
+            >
+              Confirm User Password
+            </label>
+            <input
+              type="password"
+              value={data.confirmUserPassword}
+              onChange={(e) =>
+                setData({ ...data, confirmUserPassword: e.target.value })
+              }
+              id="confirm-user-password"
+              className="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500"
+              placeholder="Confirm the user password"
               required
             />
           </div>

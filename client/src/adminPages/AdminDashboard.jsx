@@ -23,8 +23,8 @@ function AdminDashboard() {
   return (
     <div className="flex items-center flex-col md:pt-6 bg-white text-black text-center">
       <div className="mb-4">
-        <h1 className="text-5xl ">Admin Dashboard</h1>
-        {!!user && <h2 className="text-3xl ">Hi {user.name}!</h2>}
+        <h1 className="text-xl ">Admin Dashboard</h1>
+        {/* {!!user && <h2 className="text-xl ">Hi {user.name}</h2>} */}
       </div>
       {/* Render the corresponding component based on the selected option */}
       <div className="flex justify-center">

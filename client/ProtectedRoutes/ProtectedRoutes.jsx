@@ -3,11 +3,17 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import useTrialCheck from "../src/components/TrialStatus";
 
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const navigate = useNavigate();
+
+  // Using the custom hook for trial check
+  const { bannerMessage, accessBlocked } = useTrialCheck();
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -20,7 +26,6 @@ export default function ProtectedRoutes({ allowedRoles }) {
           toast.error("Session expired, please log in again.");
           navigate("/login"); // Redirect to login page
         }
-
         setUser(null); // User not authenticated
       } finally {
         setIsLoading(false);
@@ -28,7 +33,7 @@ export default function ProtectedRoutes({ allowedRoles }) {
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   if (isLoading) {
     return (
@@ -49,5 +54,18 @@ export default function ProtectedRoutes({ allowedRoles }) {
     return <Navigate to="/dashboard" />;
   }
 
-  return <Outlet />;
+  // Render trial banner if trial expired
+  return (
+    <>
+      {bannerMessage && !accessBlocked && (
+        <div className="flex justify-center items-center w-full bg-red-400 py-2 mb-4">
+          {bannerMessage}
+          <Link to="/subscribe" className="underline">
+            Subscribe now.
+          </Link>
+        </div>
+      )}
+      <Outlet />
+    </>
+  );
 }

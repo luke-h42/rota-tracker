@@ -3,6 +3,12 @@ import User from '../Models/user.js'
 import Shift from '../Models/shifts.js'
 import jwt from 'jsonwebtoken'
 import {sendEmail} from '../helpers/emailHelper.js'
+import { sendTestEmail } from '../helpers/testEmail.js'
+import 'dotenv/config';
+
+
+const useTestEmails = process.env.USE_TEST_EMAILS === 'true';
+
 
 export const test = (req,res) => {
     res.json('test is working')
@@ -468,7 +474,14 @@ Support: rotatracker@gmail.com
 Website: rotatracker.com`;
 
             // Send email to each user
-            await sendEmail(userEmail, subject, text);
+
+            if (useTestEmails) {
+                // Use test email
+                await sendTestEmail(userEmail, subject, text);
+            } else {
+                // Use real email
+                await sendEmail(userEmail, subject, text);
+            }
         }
         res.status(201).json({ message: 'Emails sent to users successfully!' });
     } catch (emailError) {
