@@ -85,6 +85,7 @@ export const registerCompanyAndAdmin = async ( req, res) => {
             paymentStatus: 'pending',
             price: 0,  // Trial is free, no payment required
             usersLimit: 5,  // Set the users limit to 5 for the trial
+            stripeSubscriptionId: 'trial'
         });
 
         await trialSubscription.save();
@@ -252,6 +253,20 @@ const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verif
 const html = `Please click the link below to verify your email: <a href="${verificationLink}">Verify Email</a>`;
 const text = `Please click the link below to verify your email: ${verificationLink}`;
 
+try {
+
+    if (useTestEmails) {
+        // Use test email
+        await sendTestEmail(user.email, 'Verify your email', text, html);
+    } else {
+        // Use real email
+        await sendEmail(user.email, 'Verify your email', text, html);
+    }
+  } catch (emailError) {
+    console.error('Error sending confirmation email:', emailError);
+  }
+
+
 await sendEmail(user.email, 'Verify your email', text, html);
 
 res.json({ message: 'Verification email resent. Please check your inbox.' });
@@ -276,7 +291,7 @@ export const loginUser = async (req, res) => {
             return res.json({ error: 'No user found' });
         }
         if (!user.isVerified) {
-            return res.status(400).json({ error: 'Please verify your email first' });
+            return res.json({ error: 'Please verify your email first' });
           }
         // Check if password matches
         const match = await comparePassword(password, user.password);

@@ -49,16 +49,23 @@ export default function AdminManageShifts() {
 
   // Send email to those on page
   const sendShiftsEmail = async () => {
-    const userIds = shifts.map((shift) => shift.user._id);
+    // Filter only selected users
+    const userIds = shifts
+      .filter((shift) => shift.selected) // Only include selected users
+      .map((shift) => shift.user._id);
+
+    if (userIds.length === 0) {
+      toast.error("Please select at least one user to send the email.");
+      return;
+    }
+
     const payload = { userIds };
+
     try {
       const response = await axios.post(
         "/api/shifts/send-shifts-email",
         payload,
-
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       toast.success("Email notification sent.");
       setEmailUsersModal(false);
@@ -123,6 +130,22 @@ export default function AdminManageShifts() {
     const formattedDate = day.toISOString().split("T")[0];
 
     setSelectedDay(formattedDate);
+  };
+
+  const handleCheckboxChange = (shift, index) => {
+    // Toggle the selected state of the user
+    const updatedShifts = [...shifts];
+    updatedShifts[index].selected = !updatedShifts[index].selected;
+    setShifts(updatedShifts); // Update the shifts with the selected checkbox state
+  };
+
+  const handleCheckAll = () => {
+    const allChecked = shifts.every((shift) => shift.selected); // Check if all are already selected
+    const updatedShifts = shifts.map((shift) => ({
+      ...shift,
+      selected: !allChecked, // Toggle selection: if all are checked, uncheck, otherwise check all
+    }));
+    setShifts(updatedShifts);
   };
 
   return (
@@ -326,7 +349,16 @@ export default function AdminManageShifts() {
                 </p>
                 <button
                   className="border hover:border-royal-blue-500 hover:bg-white hover:text-black p-2 rounded-md bg-royal-blue-500 text-white transition duration-200 ease-in-out"
-                  onClick={() => setEmailUsersModal(true)}
+                  onClick={() => {
+                    // Only allow clicking if the user doesn't have the "basic" subscription
+                    if (user?.subscriptionPlan !== "basic") {
+                      setEmailUsersModal(true);
+                    } else {
+                      toast.error(
+                        "Please upgrade your subscription to use this feature"
+                      );
+                    }
+                  }}
                 >
                   Send Notification
                 </button>
@@ -495,21 +527,17 @@ export default function AdminManageShifts() {
       {emailUsersModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={() => {
-            setEmailUsersModal(false);
-          }}
+          onClick={() => setEmailUsersModal(false)}
         >
           <div
-            className="bg-white p-6 rounded-md max-w-lg w-full sm:max-w-md"
+            className="bg-white p-4 md:p-6 rounded-md max-w-lg w-full sm:max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Sending Emails</h2>
               <button
                 className="p-1 ml-auto bg-transparent border-0 text-black opacity-50 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                onClick={() => {
-                  setEmailUsersModal(false);
-                }}
+                onClick={() => setEmailUsersModal(false)}
               >
                 <svg
                   className="w-8 h-8 text-black hover:text-gray-900"
@@ -531,25 +559,36 @@ export default function AdminManageShifts() {
               </button>
             </div>
             <div className="flex flex-col items-center justify-center w-full text-black gap-4">
-              <div className="place-self-start text-left ">
-                You are sending an email notification to the following users:
+              <div className="place-self-start text-left">
+                Please select users to be notified:
                 {shifts.map((shift, index) => (
-                  <p key={index} className="text-center">
-                    {shift.user.name}
-                  </p>
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={shift.selected || false}
+                      onChange={() => handleCheckboxChange(shift, index)}
+                    />
+                    <p>{shift.user.name}</p>
+                  </div>
                 ))}
               </div>
-              <div className="w-full flex justify-between ">
+              <div className="w-full flex justify-between gap-2 ">
                 <button
-                  className="bg-green-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-green-500 w-1/4 md:w-auto disabled:bg-gray-500 "
+                  className="bg-green-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-green-500 w-1/3 md:w-auto disabled:bg-gray-500"
                   onClick={sendShiftsEmail}
                   disabled={isLoading}
                 >
                   Confirm
                 </button>
                 <button
+                  className="bg-blue-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-blue-500 w-1/3 md:w-auto disabled:bg-gray-500"
+                  onClick={handleCheckAll}
+                >
+                  Toggle All
+                </button>
+                <button
                   type="button"
-                  className="bg-red-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-red-500 w-1/4 md:w-auto disabled:bg-gray-500"
+                  className="bg-red-300 text-black px-4 py-2 rounded-md border hover:text-gray-900 hover:bg-red-500 w-1/3 md:w-auto disabled:bg-gray-500"
                   onClick={() => setEmailUsersModal(false)}
                 >
                   Cancel

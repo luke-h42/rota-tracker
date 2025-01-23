@@ -9,7 +9,7 @@ const useTrialCheck = () => {
   const [accessBlocked, setAccessBlocked] = useState(false);
   const navigate = useNavigate();
 
-  // Function to check trial status
+  // Function to check trial status and subscription status
   const checkTrialStatus = (user) => {
     const currentDate = new Date();
     const trialEndDate = new Date(user.trialEndDate); // Convert string to Date
@@ -29,14 +29,26 @@ const useTrialCheck = () => {
         );
         setAccessBlocked(true);
       }
+    } else if (user.subscriptionStatus === "inactive") {
+      // Subscription is inactive, block access
+      setBannerMessage(
+        "Your subscription is inactive. Please renew to continue using the app."
+      );
+      setAccessBlocked(true);
+    } else if (user.subscriptionStatus === "past_due") {
+      // Subscription is overdue, block access
+      setBannerMessage(
+        "Your subscription payment has failed. Please renew to continue using the app."
+      );
+      setAccessBlocked(true);
     } else {
-      // User is not on a trial, so no banner needed
+      // User has an active subscription
       setBannerMessage("");
       setAccessBlocked(false);
     }
   };
 
-  // Check trial status on component mount or when user changes
+  // Check trial status and subscription status on component mount or when user changes
   useEffect(() => {
     if (user) {
       checkTrialStatus(user);
@@ -46,9 +58,19 @@ const useTrialCheck = () => {
   // Redirect to subscribe page if access is blocked
   useEffect(() => {
     if (accessBlocked) {
-      toast(
-        "Your trial has expired, please subscribe to continue using our services"
-      );
+      if (user.subscriptionStatus === "inactive") {
+        toast(
+          "Your subscription is inactive. Please subscribe to continue using our services."
+        );
+      } else if (user.subscriptionStatus === "past_due") {
+        toast(
+          "Your subscription payment methodd has failed. Please re-subscribe to continue using our services."
+        );
+      } else {
+        toast(
+          "Your trial has ended. Please subscribe to continue using our services."
+        );
+      }
       navigate("/subscribe");
     }
   }, [accessBlocked, navigate]);

@@ -15,12 +15,12 @@ export default function AdminDeleteShift({
           _id: selectedShift,
         },
       });
-      toast.success("Post deleted successfully!");
+      toast.success("Shift deleted successfully!");
       fetchShifts();
       onClose();
     } catch (error) {
-      console.error("Error deleting post:", error);
-      toast.error("Failed to delete post.");
+      console.error("Error deleting shift:", error);
+      toast.error("Failed to delete shift.");
     }
   };
   return (

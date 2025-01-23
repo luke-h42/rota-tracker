@@ -3,9 +3,11 @@ import { UserContext } from "../../context/userContext";
 import AdminReporting from "./AdminReporting";
 import AdminManageUsers from "./AdminManageUsers";
 import AdminManageShifts from "./AdminManageShifts";
+import toast from "react-hot-toast";
 
 function AdminDashboard() {
   const { user } = useContext(UserContext);
+
   const [selectedComponent, setSelectedComponent] = useState("manageShifts");
   const renderComponent = () => {
     switch (selectedComponent) {
@@ -52,13 +54,28 @@ function AdminDashboard() {
             Manage Shifts
           </button>
           <button
-            onClick={() => setSelectedComponent("reporting")}
+            onClick={() => {
+              // Only allow clicking if the user doesn't have the "basic" subscription
+              if (user?.subscriptionPlan !== "basic") {
+                setSelectedComponent("reporting");
+              } else {
+                toast.error(
+                  "Please upgrade your subscription to use this feature"
+                );
+              }
+            }}
+            disabled={user?.subscriptionStatus === "basic"}
             className={`p-2 rounded-md w-full transition duration-200 ease-in-out border border-royal-blue-500 
-    ${
-      selectedComponent === "reporting"
-        ? "bg-royal-blue-500 text-white"
-        : "bg-white text-black hover:bg-royal-blue-500 hover:text-white"
-    }`}
+              ${
+                selectedComponent === "reporting"
+                  ? "bg-royal-blue-500 text-white"
+                  : "bg-white text-black hover:bg-royal-blue-500 hover:text-white"
+              }
+              ${
+                user?.subscriptionStatus === "basic"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : ""
+              }`}
           >
             Reporting
           </button>

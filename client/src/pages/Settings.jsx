@@ -21,7 +21,7 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
           className="bg-white text-black p-4 rounded-md hover:bg-royal-blue-500 w-full hover:text-white transition duration-200 ease-in-out border border-royal-blue-500"
           onClick={() => setChangeNameModal(true)}
@@ -40,11 +40,23 @@ export default function Settings() {
         >
           Change password
         </button>
+
         <button
           className="bg-white text-black p-4 rounded-md hover:bg-royal-blue-500 w-full hover:text-white transition duration-200 ease-in-out border border-royal-blue-500"
           onClick={() => setRequestSupportModal(true)}
         >
           Get Support
+        </button>
+      </div>
+      <div className="mt-4 ">
+        <button
+          className="bg-white text-black p-4 rounded-md hover:bg-royal-blue-500 w-full hover:text-white transition duration-200 ease-in-out border border-royal-blue-500"
+          onClick={() =>
+            (window.location.href =
+              "https://billing.stripe.com/p/login/test_9AQ163fvMbvM8NOaEF")
+          }
+        >
+          Manage Subscriptions
         </button>
       </div>
       {changeNameModal && (

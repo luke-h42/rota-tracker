@@ -3,6 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { UserContext } from "../../context/userContext";
 export default function UpdateName({ onClose }) {
+  const { user } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [newName, setNewName] = useState("");
   const [password, setPassword] = useState("");
@@ -49,6 +50,7 @@ export default function UpdateName({ onClose }) {
   return (
     <div className="flex items-center justify-center w-full text-black">
       <div className="px-4 py-6 max-w-full w-full sm:max-w-md  max-h-[80vh] overflow-auto">
+        <p className="mb-4">Current Name: {user.name}</p>
         <form>
           <div className="mb-4">
             <label

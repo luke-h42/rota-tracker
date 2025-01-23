@@ -17,12 +17,14 @@ export default function Login() {
   });
   const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
+  const [verificationError, setVerificationError] = useState(false);
   const loginUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     const { email, password } = data;
     if (!email || !password) {
       toast.error("Please fill in all the fields.");
+      setIsLoading(false);
       return;
     }
     try {
@@ -30,11 +32,18 @@ export default function Login() {
         email,
         password,
       });
-
+      if (response.data.error === "Please verify your email first") {
+        setVerificationError(true);
+        console.log(verificationError);
+        toast.error("Please verify your email first.");
+        setIsLoading(false);
+        return;
+      }
       // If the backend sends an error, show it via toast
       if (response.data.error) {
         toast.error(response.data.error); // Show the error message sent from the backend
         setIsLoading(false);
+        return;
       } else {
         // Handle successful login and set the user context
         setUser(response.data); // Assuming the response contains the user's data
@@ -88,6 +97,30 @@ export default function Login() {
     }
   };
 
+  const handleResendVerification = async () => {
+    setVerificationError(false); // Reset error state
+    const { email } = data;
+
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/auth/resend-verification", {
+        email,
+      });
+
+      if (response.data.error) {
+        toast.error(response.data.error);
+      } else {
+        toast.success("Verification email sent. Please check your inbox.");
+      }
+    } catch (error) {
+      toast.error("Failed to send verification email.");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center w-full text-black mt-[15vh]">
       <div className="bg-white rounded-lg px-8 py-6 max-w-md w-full">
@@ -104,7 +137,10 @@ export default function Login() {
             <input
               type="email"
               value={data.email}
-              onChange={(e) => setData({ ...data, email: e.target.value })}
+              onChange={(e) => {
+                setVerificationError(false);
+                setData({ ...data, email: e.target.value });
+              }}
               id="email"
               className="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500"
               placeholder="Enter your email"
@@ -155,6 +191,21 @@ export default function Login() {
             Forgot password?
           </p>
         </div>
+        {/* Show Resend Verification Button if Email is Unverified */}
+        {verificationError && (
+          <div className="flex flex-col mt-4 text-center gap-2">
+            <p className="text-sm text-gray-700">
+              It looks like you haven't verified your email yet. Please check
+              your inbox or click below to send a new verification email.
+            </p>
+            <button
+              onClick={handleResendVerification}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-royal-blue-500 hover:bg-royal-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Resend Verification Link
+            </button>
+          </div>
+        )}
       </div>
 
       {forgotPasswordModal && (

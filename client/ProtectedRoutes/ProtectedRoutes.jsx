@@ -56,9 +56,15 @@ export default function ProtectedRoutes({ allowedRoles }) {
 
   // Render trial banner if trial expired
   return (
-    <>
+    <div>
+      {console.log(
+        "bannerMessage:",
+        bannerMessage,
+        "accessBlocked:",
+        accessBlocked
+      )}
       {bannerMessage && !accessBlocked && (
-        <div className="flex justify-center items-center w-full bg-red-400 py-2 mb-4">
+        <div className="flex justify-center items-center w-full bg-red-300 py-2 mb-4">
           {bannerMessage}
           <Link to="/subscribe" className="underline">
             Subscribe now.
@@ -66,6 +72,6 @@ export default function ProtectedRoutes({ allowedRoles }) {
         </div>
       )}
       <Outlet />
-    </>
+    </div>
   );
 }
