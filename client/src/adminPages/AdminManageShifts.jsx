@@ -195,7 +195,7 @@ export default function AdminManageShifts() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center">
+            <div className="flex justify-center min-h-screen">
               <p>Loading shift data...</p>
             </div>
           ) : (

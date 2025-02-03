@@ -7,7 +7,7 @@ export default function Home() {
         {/* Header Section */}
         <header className="text-center mb-4">
           <h1 className="text-4xl font-bold text-royal-blue-500 leading-tight md:text-5xl">
-            RotaTracker
+            RotaTrackr
           </h1>
           <h2 className="text-xl text-gray-700 ">
             The Easy Way to Manage Employee Rotas & Hours
@@ -22,7 +22,7 @@ export default function Home() {
               Reporting.
             </p>
             <p className="text-lg text-gray-600 mb-6">
-              At RotaTracker, we're here to help make managing your team's
+              At RotaTrackr, we're here to help make managing your team's
               schedule and reporting work hours a breeze. Say goodbye to
               spreadsheets and endless emails—streamline your workflow with our
               intuitive, user-friendly platform today!
@@ -41,7 +41,7 @@ export default function Home() {
             </div>
           </section>
           <div className="flex items-center justify-center text-3xl font-bold text-royal-blue-500 leading-tight md:text-5xl mb-6">
-            <h1>RotaTracker Features</h1>
+            <h1>RotaTrackr Features</h1>
           </div>
           {/* Manager Section */}
           <section className="mb-8">

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useDebugValue } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { UserContext } from "../../context/userContext";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -11,7 +11,8 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [aggregatedHours, setAggregatedHours] = useState(0);
   const [selectedTab, setSelectedTab] = useState("userShifts");
-
+  const personalRef = useRef();
+  const teamRef = useRef();
   // Get Monday of the week for a given date
   const getMondayOfWeek = (date) => {
     const dayOfWeek = date.getDay();
@@ -135,8 +136,34 @@ function Dashboard() {
     daysOfWeek.push(day);
   }
 
+  const handlePrint = (ref) => {
+    const content = ref.current.innerHTML;
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    // Copy all styles from the main document
+    const styles = Array.from(document.styleSheets)
+      .map((styleSheet) => {
+        if (styleSheet.cssRules) {
+          return Array.from(styleSheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join("");
+        }
+        return "";
+      })
+      .join("");
+
+    // Write the content and styles to the print window
+    printWindow.document.write("<html><head><title>Print</title>");
+    printWindow.document.write("<style>" + styles + "</style>"); // Include the styles
+    printWindow.document.write("</head><body>");
+    printWindow.document.write(content); // Write the content to print
+    printWindow.document.write("</body></html>");
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
-    <div className="flex items-center flex-col md:pt-6 bg-white text-center text-black">
+    <div className="flex items-center flex-col md:pt-6 bg-white text-center text-black ">
       {user && <h2 className="text-3xl">Hi, {user.name}</h2>}
 
       <div className="flex flex-col items-center">
@@ -225,13 +252,16 @@ function Dashboard() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center">
+        <div className="flex justify-center min-h-screen">
           <p>Loading shift data...</p>
         </div>
       ) : selectedTab === "userShifts" ? (
         <>
           <p>Total hours this week: {aggregatedHours} hours</p>
-          <div className="w-full max-w-screen-sm grid-cols-1 p-4 ">
+          <div
+            className="w-full max-w-screen-sm grid-cols-1 p-4 "
+            ref={personalRef}
+          >
             {daysOfWeek.map((day, index) => {
               // Return shifts per day, sorted by start time
               const dayShifts = userShifts.filter((shift) => {
@@ -249,7 +279,7 @@ function Dashboard() {
               return (
                 <div className="border mb-2 rounded-lg p-2" key={index}>
                   <div className="flex justify-between items-center mb-2">
-                    <div className="font-bold text-lg text-gray-700">
+                    <div className="font-bold text-lg text-gray-700 ">
                       {day.toLocaleDateString("en-GB", {
                         weekday: "short",
                         year: "numeric",
@@ -296,13 +326,22 @@ function Dashboard() {
                 </div>
               );
             })}
+            <button
+              onClick={() => handlePrint(personalRef)}
+              className="border border-royal-blue-500 p-2 mt-4 rounded-md hover:bg-royal-blue-500 hover:text-white transition duration-200 ease-in-out"
+            >
+              Print Personal
+            </button>
           </div>
         </>
       ) : (
         selectedTab === "teamShifts" && (
           <>
             <p>Viewing the team rota</p>
-            <div className="w-full max-w-screen-sm grid-cols-1 p-4 ">
+            <div
+              className="w-full max-w-screen-sm grid-cols-1 p-4 "
+              ref={teamRef}
+            >
               {daysOfWeek.map((day, index) => {
                 const dayShifts = teamShifts.filter((shift) => {
                   const shiftDate = new Date(shift.startDate);
@@ -371,6 +410,12 @@ function Dashboard() {
                   </div>
                 );
               })}
+              <button
+                onClick={() => handlePrint(teamRef)}
+                className="border border-royal-blue-500 p-2 mt-4 rounded-md hover:bg-royal-blue-500 hover:text-white transition duration-200 ease-in-out"
+              >
+                Print Team
+              </button>
             </div>
           </>
         )

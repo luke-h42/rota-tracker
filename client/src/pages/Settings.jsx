@@ -11,7 +11,7 @@ export default function Settings() {
   const [requestSupportModal, setRequestSupportModal] = useState(false);
   return (
     <div className="flex items-center  flex-col  bg-white text-center text-black md:pt-6">
-      <div className="mb-4 max-w-md flex flex-col gap-4 p-2">
+      <div className="mb-4 max-w-screen-lg flex flex-col gap-4 p-2">
         <h1 className="text-5xl ">Settings</h1>
         <p>
           On the Settings page, you can easily update your account details.
@@ -21,7 +21,7 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button
           className="bg-white text-black p-4 rounded-md hover:bg-royal-blue-500 w-full hover:text-white transition duration-200 ease-in-out border border-royal-blue-500"
           onClick={() => setChangeNameModal(true)}

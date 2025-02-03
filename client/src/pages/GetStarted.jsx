@@ -79,7 +79,7 @@ export default function GetStarted() {
       <div className="max-w-2xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-gray-700 sm:text-4xl">
           Get Started with{" "}
-          <span className="text-royal-blue-500"> RotaTracker</span>
+          <span className="text-royal-blue-500"> RotaTrackr</span>
         </h2>
         <p className="mt-4 px-4 text-lg text-gray-600">
           Sign up today and make scheduling your team's work hours easier than

@@ -18,6 +18,16 @@ export default function Login() {
   const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [verificationError, setVerificationError] = useState(false);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (user) {
+      // Redirect to dashboard if user is logged in
+      toast("Already logged in, redirecting...");
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   const loginUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);

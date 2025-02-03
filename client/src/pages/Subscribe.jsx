@@ -29,7 +29,7 @@ export default function Subscribe() {
     <div className="flex flex-col ">
       <div className="p-8 mb-4 rounded-lg w-full ">
         <div className="flex items-center justify-center text-3xl font-bold text-royal-blue-500 leading-tight md:text-5xl mb-6">
-          <h1>Subscribe to RotaTracker</h1>
+          <h1>Subscribe to RotaTrackr</h1>
         </div>
         <div className="max-w-6xl mx-auto flex flex-col justify-center ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

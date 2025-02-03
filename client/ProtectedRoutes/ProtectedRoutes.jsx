@@ -37,8 +37,8 @@ export default function ProtectedRoutes({ allowedRoles }) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center flex-col h-[calc(100vh-40px)] bg-white ">
-        <h1 className="text-5xl text-gray-700 dark:text-gray-300">
+      <div className="flex items-center justify-center flex-col h-[calc(100vh-40px)] bg-white">
+        <h1 className="text-5xl text-gray-700 dark:text-gray-300 ">
           Loading...
         </h1>
       </div>

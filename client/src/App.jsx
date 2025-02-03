@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { UserContextProvider } from "../context/userContext";
 import axios from "axios";
 import ProtectedRoutes from "../ProtectedRoutes/ProtectedRoutes";
@@ -33,44 +33,160 @@ axios.defaults.baseURL = "http://localhost:5000";
 // axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
 axios.defaults.withCredentials = true;
 
+// Importing the PageTransitionWrapper component
+import PageTransitionWrapper from "./components/PageTransitionWrapper";
+
 function App() {
+  const location = useLocation(); // Get the current location for route-based transitions
+
   return (
     <UserContextProvider>
-      <Routes>
+      <Routes location={location}>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/get-started" element={<GetStarted />} />
-
+          <Route
+            path="/"
+            element={
+              <PageTransitionWrapper>
+                <Home />
+              </PageTransitionWrapper>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PageTransitionWrapper>
+                <Register />
+              </PageTransitionWrapper>
+            }
+          />
+          <Route
+            path="/verify-email"
+            element={
+              <PageTransitionWrapper>
+                <VerifyEmail />
+              </PageTransitionWrapper>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PageTransitionWrapper>
+                <ResetPassword />
+              </PageTransitionWrapper>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PageTransitionWrapper>
+                <Login />
+              </PageTransitionWrapper>
+            }
+          />
+          <Route
+            path="/get-started"
+            element={
+              <PageTransitionWrapper>
+                <GetStarted />
+              </PageTransitionWrapper>
+            }
+          />
+          {/* Protected Routes */}
           <Route
             element={
               <ProtectedRoutes allowedRoles={["user", "admin", "owner"]} />
             }
           >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/subscribe" element={<Subscribe />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PageTransitionWrapper>
+                  <Dashboard />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PageTransitionWrapper>
+                  <Settings />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/subscribe"
+              element={
+                <PageTransitionWrapper>
+                  <Subscribe />
+                </PageTransitionWrapper>
+              }
+            />
             <Route
               path="/subscription-success"
-              element={<SubscriptionSuccess />}
+              element={
+                <PageTransitionWrapper>
+                  <SubscriptionSuccess />
+                </PageTransitionWrapper>
+              }
             />
           </Route>
 
+          {/* Admin Routes */}
           <Route
             element={<ProtectedRoutes allowedRoles={["admin", "owner"]} />}
           >
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/manage-users" element={<AdminManageUsers />} />
-            <Route path="/manage-shifts" element={<AdminManageShifts />} />
-            <Route path="/reporting" element={<AdminReporting />} />
+            <Route
+              path="/admin"
+              element={
+                <PageTransitionWrapper>
+                  <AdminDashboard />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/manage-users"
+              element={
+                <PageTransitionWrapper>
+                  <AdminManageUsers />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/manage-shifts"
+              element={
+                <PageTransitionWrapper>
+                  <AdminManageShifts />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/reporting"
+              element={
+                <PageTransitionWrapper>
+                  <AdminReporting />
+                </PageTransitionWrapper>
+              }
+            />
           </Route>
 
+          {/* Owner Routes */}
           <Route element={<ProtectedRoutes allowedRoles={["owner"]} />}>
-            <Route path="/register-company" element={<RegisterNewCompany />} />
-            <Route path="/register-new-admin" element={<RegisterNewAdmin />} />
+            <Route
+              path="/register-company"
+              element={
+                <PageTransitionWrapper>
+                  <RegisterNewCompany />
+                </PageTransitionWrapper>
+              }
+            />
+            <Route
+              path="/register-new-admin"
+              element={
+                <PageTransitionWrapper>
+                  <RegisterNewAdmin />
+                </PageTransitionWrapper>
+              }
+            />
           </Route>
 
           <Route path="*" element={<NotFound />} />

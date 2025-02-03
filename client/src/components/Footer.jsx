@@ -4,8 +4,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4">
         <p className="text-center text-sm md:text-base">
           © 2024{" "}
-          <span className="font-semibold text-royal-blue-500">RotaTracker</span>
-          . All Rights Reserved.
+          <span className="font-semibold text-royal-blue-500">RotaTrackr</span>.
+          All Rights Reserved.
         </p>
       </div>
     </footer>
