@@ -202,18 +202,18 @@ export const registerUser = async (req, res) => {
     // Save the new user to the database
     await newUser.save();
 
-    const subject = `Welcome to RotaTracker`
+    const subject = `Welcome to RotaTrackr`
     const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
       <p>Hello ${userName},</p>
   
-      <p>We’re excited to let you know that you've been added to the team at <strong>${company.name}</strong> on <strong>RotaTracker</strong>! You're now all set to manage your shifts and stay updated with the team's schedule.</p>
+      <p>We’re excited to let you know that you've been added to the team at <strong>${company.name}</strong> on <strong>RotaTrackr</strong>! You're now all set to manage your shifts and stay updated with the team's schedule.</p>
   
       <p><strong>First, verify your account by clicking the link:</strong> <a href="${verificationLink}" style="color: #007bff;">Verify Email</a></p>
   
       <p>Here's what you can do next:</p>
       <ul>
-        <li><strong>Login to your account:</strong> <a href="https://www.rotatracker.com/login" style="color: #007bff;">Login Here</a></li>
+        <li><strong>Login to your account:</strong> <a href="https://www.rotatrackr.com/login" style="color: #007bff;">Login Here</a></li>
         <li><strong>Access your personal schedule:</strong> Keep track of your shifts and stay organized.</li>
         <li><strong>Check your shifts:</strong> View the details of your upcoming shifts and plan your time accordingly.</li>
         <li><strong>View the team’s schedule:</strong> Stay in the loop by seeing the full team’s rota and schedule.</li>
@@ -226,25 +226,25 @@ export const registerUser = async (req, res) => {
       <p>Welcome aboard!</p>
   
       <p>Best regards,</p>
-      <p>The RotaTracker Team</p>
+      <p>The RotaTrackr Team</p>
   
       <hr style="border: 1px solid #ddd;">
   
       <p><strong>Contact Us:</strong><br>
-        Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
-        Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+        Support: <a href="mailto:rotatrackr@gmail.com" style="color: #007bff;">rotatrackr@gmail.com</a><br>
+        Website: <a href="https://www.rotatrackr.com" style="color: #007bff;">rotatrackr.com</a>
       </p>
     </div>
   `;
   
     const text = `Hello ${userName}, 
 
-We’re excited to let you know that you've been added to the team at ${company.name} on RotaTracker! You're now all set to manage your shifts and stay updated with the team's schedule.
+We’re excited to let you know that you've been added to the team at ${company.name} on RotaTrackr! You're now all set to manage your shifts and stay updated with the team's schedule.
 
 First, verify your account by clicking the link: ${verificationLink}
 
 Here's what you can do next:
-- Login to your account: [https://www.rotatracker.com/login] 
+- Login to your account: [https://www.rotatrackr.com/login] 
 – Access your personal schedule and keep track of your shifts.
 - Check your shifts: View the details of your upcoming shifts and plan your time accordingly.
 - View the team’s schedule: Stay in the loop by seeing the full team’s rota and schedule.
@@ -256,11 +256,11 @@ We look forward to helping you stay organized and on top of your schedule!
 Welcome aboard!
 
 Best regards,
-The RotaTracker Team
+The RotaTrackr Team
 
 Contact Us:
-Support: rotatracker@gmail.com
-Website: rotatracker.com`
+Support: rotatrackr@gmail.com
+Website: rotatrackr.com`
     
     
     try {

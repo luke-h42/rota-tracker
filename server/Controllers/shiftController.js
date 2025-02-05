@@ -449,7 +449,7 @@ export const getUserShifts = async (req, res) => {
 
 export const sendShiftsEmail = async (req, res) => {
     const { userIds } = req.body; // Getting the list of email addresses
-    const subject = `RotaTracker Notification`;
+    const subject = `RotaTrackr Notification`;
     if (!userIds || userIds.length === 0) {
         return res.status(400).json({ message: 'No userIds provided' });
     }
@@ -464,14 +464,14 @@ export const sendShiftsEmail = async (req, res) => {
             const userName = user.name;
             const text = `Dear ${userName}, 
 
-This week's rota has now been completed, and it is available for you to review. Please log in to RotaTracker to check the updated schedule and ensure everything is in order.
+This week's rota has now been completed, and it is available for you to review. Please log in to RotaTrackr to check the updated schedule and ensure everything is in order.
 
 Best regards,
-The RotaTracker Team
+The RotaTrackr Team
 
 Contact Us:
-Support: rotatracker@gmail.com
-Website: rotatracker.com`;
+Support: rotatrackr@gmail.com
+Website: rotatrackr.com`;
 
             // Send email to each user
 

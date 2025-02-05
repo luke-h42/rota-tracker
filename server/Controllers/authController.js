@@ -115,19 +115,19 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         newCompany.admins.push(newAdmin._id); // Use _id of the new user
         await newCompany.save();
     
-        const subject = `Welcome to RotaTracker`
+        const subject = `Welcome to RotaTrackr`
         const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <p>Hello ${adminName},</p>
           
-          <p>We’re excited to welcome you to <strong>RotaTracker</strong>! Your company, <strong>${companyName}</strong>, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!</p>
+          <p>We’re excited to welcome you to <strong>RotaTrackr</strong>! Your company, <strong>${companyName}</strong>, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!</p>
       
           <p>Here's what you can do next:</p>
           <ul>
             <li><strong>Verify your account:</strong> Please click the following link to verify your email: <a href="${verificationLink}" style="color: #007bff;">Verify Email</a></li>
-            <li><strong>Login to your account:</strong> <a href="https://www.rotatracker.com/login" style="color: #007bff;">Login Here</a></li>
+            <li><strong>Login to your account:</strong> <a href="https://www.rotatrackr.com/login" style="color: #007bff;">Login Here</a></li>
             <li><strong>Create your first rota:</strong> Get started by adding employees, shifts, and schedules for better team coordination.</li>
-            <li><strong>Explore features:</strong> From shift swapping to real-time updates, RotaTracker has a lot to offer to help your company stay organized.</li>
+            <li><strong>Explore features:</strong> From shift swapping to real-time updates, RotaTrackr has a lot to offer to help your company stay organized.</li>
           </ul>
       
           <p>Need help? Our support team is here for you. Just reply to this email.</p>
@@ -137,13 +137,13 @@ export const registerCompanyAndAdmin = async ( req, res) => {
           <p>Welcome aboard once again!</p>
       
           <p>Best regards,</p>
-          <p>The RotaTracker Team</p>
+          <p>The RotaTrackr Team</p>
       
           <hr style="border: 1px solid #ddd;">
       
           <p><strong>Contact Us:</strong><br>
-            Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
-            Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+            Support: <a href="mailto:rotatrackr@gmail.com" style="color: #007bff;">rotatrackr@gmail.com</a><br>
+            Website: <a href="https://www.rotatrackr.com" style="color: #007bff;">rotatrackr.com</a>
           </p>
         </div>
       `;
@@ -151,13 +151,13 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         const text = `
         Hello ${adminName}, 
         
-        We’re excited to welcome you to RotaTracker! Your company, ${companyName}, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!
+        We’re excited to welcome you to RotaTrackr! Your company, ${companyName}, has been successfully registered with us. You're now all set to start managing your rotas and scheduling like a pro!
         
         Here's what you can do next:
         - Verify your account: Please click the following link to verify your email: ${verificationLink}
-        - Login to your account: https://www.rotatracker.com/login
+        - Login to your account: https://www.rotatrackr.com/login
         - Create your first rota: Get started by adding employees, shifts, and schedules for better team coordination.
-        - Explore features: From shift swapping to real-time updates, RotaTracker has a lot to offer to help your company stay organized.
+        - Explore features: From shift swapping to real-time updates, RotaTrackr has a lot to offer to help your company stay organized.
         
         Need help? Our support team is here for you. Just reply to this email.
         
@@ -166,11 +166,11 @@ export const registerCompanyAndAdmin = async ( req, res) => {
         Welcome aboard once again!
         
         Best regards,
-        The RotaTracker Team
+        The RotaTrackr Team
         
         Contact Us:
-        Support: rotatracker@gmail.com
-        Website: rotatracker.com
+        Support: rotatrackr@gmail.com
+        Website: rotatrackr.com
         `;
         
         
@@ -351,13 +351,13 @@ export const resetPasswordLink = async (req, res) => {
             <a href="${verificationLink}">Change Password</a>
             <p>If this wasn't you, please get in touch with support.</p>
             <p>Best regards,</p>
-            <p>The RotaTracker Team</p>
+            <p>The RotaTrackr Team</p>
       
             <hr style="border: 1px solid #ddd;">
       
             <p><strong>Contact Us:</strong><br>
-             Support: <a href="mailto:rotatracker@gmail.com" style="color: #007bff;">rotatracker@gmail.com</a><br>
-             Website: <a href="https://www.rotatracker.com" style="color: #007bff;">rotatracker.com</a>
+             Support: <a href="mailto:rotatrackr@gmail.com" style="color: #007bff;">rotatrackr@gmail.com</a><br>
+             Website: <a href="https://www.rotatrackr.com" style="color: #007bff;">rotatrackr.com</a>
             </p>
         `;
 
@@ -368,11 +368,11 @@ export const resetPasswordLink = async (req, res) => {
             If this wasn't you, please get in touch with support.
             
             Best regards,
-            The RotaTracker Team
+            The RotaTrackr Team
         
             Contact Us:
-            Support: rotatracker@gmail.com
-            Website: rotatracker.com
+            Support: rotatrackr@gmail.com
+            Website: rotatrackr.com
         `;
 
         // Send the reset password email

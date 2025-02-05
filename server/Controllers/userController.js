@@ -176,7 +176,7 @@ export const getSupport = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      const supportSubject = `RotaTracker Support Request`;
+      const supportSubject = `RotaTrackr Support Request`;
       const supportText = `The following request has been made from ${user.name}, ${user.email}:
 ${supportMessage}`
       const text = `Hello ${user.name},
@@ -190,7 +190,7 @@ If you have any additional information or questions in the meantime, please don'
 We appreciate your patience and look forward to assisting you.   
 
 Best Regards,
-The RotaTracker team.
+The RotaTrackr team.
 `
 try {
  
