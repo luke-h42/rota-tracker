@@ -26,7 +26,7 @@ export default function Login() {
       toast("Already logged in, redirecting...");
       navigate("/dashboard", { replace: true });
     }
-  }, [user, navigate]);
+  }, []);
 
   const loginUser = async (e) => {
     e.preventDefault();
