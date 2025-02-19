@@ -24,7 +24,7 @@ export default function ProtectedRoutes({ allowedRoles }) {
       } catch (error) {
         if (error.response && error.response.status === 401) {
           toast.error("Session expired, please log in again.");
-          navigate("/login"); // Redirect to login page
+          navigate("/login", { replace: true }); // Redirect to login page
         }
         setUser(null); // User not authenticated
       } finally {
@@ -32,8 +32,12 @@ export default function ProtectedRoutes({ allowedRoles }) {
       }
     };
 
-    fetchUser();
-  }, [navigate]);
+    if (!user) {
+      fetchUser();
+    } else {
+      setIsLoading(false);
+    }
+  }, [navigate, user]);
 
   if (isLoading) {
     return (
@@ -47,11 +51,11 @@ export default function ProtectedRoutes({ allowedRoles }) {
 
   // Check authentication and role
   if (!user || user.role === null) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Render trial banner if trial expired

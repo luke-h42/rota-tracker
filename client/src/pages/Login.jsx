@@ -24,7 +24,7 @@ export default function Login() {
     if (user) {
       // Redirect to dashboard if user is logged in
       toast("Already logged in, redirecting...");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);
 
