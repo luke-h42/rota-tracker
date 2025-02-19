@@ -8,7 +8,7 @@ export default function AdminReporting() {
   const [startDateSearch, setStartDateSearch] = useState("");
   const [endDateSearch, setEndDateSearch] = useState("");
   const [monthSearch, setMonthSearch] = useState("");
-  const [yearSearch, setYearSearch] = useState(new Date().getFullYear);
+  const [yearSearch, setYearSearch] = useState(new Date().getFullYear());
   const [isLoading, setIsLoading] = useState(false);
   const [shifts, setShifts] = useState([]);
   const months = [
