@@ -27,7 +27,6 @@ export default function Login() {
       navigate("/dashboard", { replace: true });
     } else {
       // Handle the case when the user is not fully authenticated or the data is missing
-      console.log("User is not fully authenticated, redirecting to login.");
       navigate("/login");
     }
   }, [user, navigate]);

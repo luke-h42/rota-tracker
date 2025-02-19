@@ -173,7 +173,7 @@ export default function AdminReporting() {
                 <select
                   id="year"
                   name="year"
-                  value={yearSearch}
+                  value={currentYear}
                   onChange={handleYearChange}
                   className="border border-gray-300 rounded-lg p-2"
                 >
