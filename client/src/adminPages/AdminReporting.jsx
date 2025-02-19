@@ -8,7 +8,7 @@ export default function AdminReporting() {
   const [startDateSearch, setStartDateSearch] = useState("");
   const [endDateSearch, setEndDateSearch] = useState("");
   const [monthSearch, setMonthSearch] = useState("");
-  const [yearSearch, setYearSearch] = useState("2024");
+  const [yearSearch, setYearSearch] = useState(new Date().getFullYear);
   const [isLoading, setIsLoading] = useState(false);
   const [shifts, setShifts] = useState([]);
   const months = [
@@ -173,7 +173,7 @@ export default function AdminReporting() {
                 <select
                   id="year"
                   name="year"
-                  value={currentYear}
+                  value={yearSearch}
                   onChange={handleYearChange}
                   className="border border-gray-300 rounded-lg p-2"
                 >
