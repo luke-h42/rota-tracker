@@ -29,8 +29,8 @@ import Layout from "./components/Layout";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 
 // Axios Configuration
-// axios.defaults.baseURL = "http://localhost:5000";
-axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
+axios.defaults.baseURL = "http://localhost:5000";
+// axios.defaults.baseURL = "https://rota-tracker.vercel.app/";
 axios.defaults.withCredentials = true;
 
 // Importing the PageTransitionWrapper component

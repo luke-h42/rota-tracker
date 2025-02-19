@@ -9,6 +9,7 @@ import useTrialCheck from "../src/components/TrialStatus";
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [sessionExpired, setSessionExpired] = useState(false);
   const navigate = useNavigate();
 
   // Using the custom hook for trial check
@@ -21,10 +22,16 @@ export default function ProtectedRoutes({ allowedRoles }) {
           withCredentials: true,
         });
         setUser(response.data);
+        setSessionExpired(false); // Reset session expired state when user is fetched
       } catch (error) {
-        if (error.response && error.response.status === 401) {
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          !sessionExpired
+        ) {
+          setSessionExpired(true); // Set sessionExpired to true to prevent repeated toasts
           toast.error("Session expired, please log in again.");
-          navigate("/login"); // Redirect to login page
+          navigate("/login");
         }
         setUser(null); // User not authenticated
       } finally {
@@ -33,7 +40,7 @@ export default function ProtectedRoutes({ allowedRoles }) {
     };
 
     fetchUser();
-  }, [navigate]);
+  }, [navigate, sessionExpired]); // Use sessionExpired to prevent redundant fetching
 
   if (isLoading) {
     return (
