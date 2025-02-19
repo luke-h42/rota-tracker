@@ -8,29 +8,32 @@ export function UserContextProvider({ children }) {
 
   // Fetch user data on initial mount
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const { data } = await axios.get("/api/auth/profile", {
-          withCredentials: true,
-        });
-
-        if (data) {
-          setUser({
-            name: data.name,
-            companyName: data.companyName,
-            role: data.role,
-            subscriptionStatus: data.subscriptionStatus,
-            trialEndDate: data.trialEndDate,
-            subscriptionPlan: data.subscriptionPlan,
+    if (!user) {
+      // Only fetch user data if not already set
+      const fetchUserData = async () => {
+        try {
+          const { data } = await axios.get("/api/auth/profile", {
+            withCredentials: true,
           });
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
 
-    fetchUserData();
-  }, []);
+          if (data) {
+            setUser({
+              name: data.name,
+              companyName: data.companyName,
+              role: data.role,
+              subscriptionStatus: data.subscriptionStatus,
+              trialEndDate: data.trialEndDate,
+              subscriptionPlan: data.subscriptionPlan,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [user]); // Only run if 'user' is not set
 
   // Function to manually refresh user context (e.g., after login)
   const refreshUserContext = async () => {
