@@ -3,13 +3,15 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useTrialCheck from "../src/components/TrialStatus";
 
 export default function ProtectedRoutes({ allowedRoles }) {
   const [user, setUser] = useState(null); // Store user data
   const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [redirecting, setRedirecting] = useState(false); // Prevent infinite redirection
   const navigate = useNavigate();
+
+  // Using the custom hook for trial check
   const { bannerMessage, accessBlocked } = useTrialCheck();
 
   useEffect(() => {
@@ -22,20 +24,16 @@ export default function ProtectedRoutes({ allowedRoles }) {
       } catch (error) {
         if (error.response && error.response.status === 401) {
           toast.error("Session expired, please log in again.");
-          setRedirecting(true); // Flag that we're redirecting
-          navigate("/login", { replace: true }); // Prevent looping by using replace
-        } else {
-          setUser(null); // User is not authenticated
+          navigate("/login"); // Redirect to login page
         }
+        setUser(null); // User not authenticated
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (!redirecting) {
-      fetchUser();
-    }
-  }, [navigate, redirecting]);
+    fetchUser();
+  }, [navigate]);
 
   if (isLoading) {
     return (
@@ -47,19 +45,30 @@ export default function ProtectedRoutes({ allowedRoles }) {
     );
   }
 
-  if (!user || !user.role) {
-    return <Navigate to="/login" replace />;
+  // Check authentication and role
+  if (!user || user.role === null) {
+    return <Navigate to="/login" />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard" />;
   }
 
+  // Render trial banner if trial expired
   return (
     <div>
+      {console.log(
+        "bannerMessage:",
+        bannerMessage,
+        "accessBlocked:",
+        accessBlocked
+      )}
       {bannerMessage && !accessBlocked && (
         <div className="flex justify-center items-center w-full bg-red-300 py-2 mb-4">
           {bannerMessage}
+          <Link to="/subscribe" className="underline">
+            Subscribe now.
+          </Link>
         </div>
       )}
       <Outlet />
