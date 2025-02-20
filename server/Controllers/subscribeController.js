@@ -4,6 +4,11 @@ import User from '../Models/user.js'
 import Subscription from '../Models/subscription.js'
 import Company from '../Models/company.js'
 import jwt from 'jsonwebtoken'
+
+import {sendEmail} from '../helpers/emailHelper.js'
+import { sendTestEmail } from '../helpers/testEmail.js'
+const useTestEmails = process.env.USE_TEST_EMAILS === 'true';
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const prodIds = {
@@ -109,15 +114,12 @@ export const stripeEvents = async (req, res ) => {
       }
       break;
 
-    //In
-
-    // Subscrioption updated or renewed
+    // Subscription updated or renewed
     case "customer.subscription.updated":
       const subId = event.data.object.id;
-      const companyIdent = event.data.object.metadata.companyId;
       const planUpdated = event.data.object.items.data[0].plan.product;
       try {
-        await handleSubscriptionUpate(subId, companyIdent, planUpdated)
+        await handleSubscriptionUpate(subId, planUpdated)
         res.status(200).send('Success');
       } catch (err) {
         console.error('Error handling subscription update', err);
@@ -209,15 +211,17 @@ const handlePaymentSuccess = async (invoice, companyId, plan) => {
 };
 
 // Handle subscription update including renewals
-const handleSubscriptionUpate = async (subId, companyId, plan) => {
+const handleSubscriptionUpate = async (subId,  plan) => {
   try {
     // Find the subscription by its Stripe subscription ID
-    const subscription = await Subscription.findOne({ stripeSubscriptionId: subId });
+    const subscription = await Subscription.findOne({ stripeSubscriptionId: subId }).populate('company');
 
     if (!subscription) {
       throw new Error('Subscription not found for this company');
     }
-
+    if(!subscription.company_id) {
+      throw new Error('Company Id not found')
+    }
     // Map the received plan (which is actually the product ID) to your internal plan
     const planName = prodIds[plan];  // Using prodIds to get the plan name from the product ID
 
@@ -240,7 +244,7 @@ const handleSubscriptionUpate = async (subId, companyId, plan) => {
     // Save the updated subscription
     await subscription.save();
 
-    console.log('Subscription updated successfully for company:', companyId);
+    console.log('Subscription updated successfully for company:', subscription.company_id);
   } catch (error) {
     console.error('Error updating subscription:', error);
     throw new Error('Failed to update subscription after payment');
@@ -285,6 +289,7 @@ const handlePaymentFailure = async (subscriptionIdentification) => {
   if (subscription) {
     subscription.status = 'past_due';
     await subscription.save();
+    // add email to notify customer
   }
   console.log('Subscription has insufficient funding for subscription:', subscriptionIdentification);
 };

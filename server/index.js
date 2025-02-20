@@ -32,6 +32,11 @@ app.use('/api/shifts', shiftRouter)
 app.use('/api/users', userRouter)
 app.use('/api/subscribe', subscribeRouter)
 
+// Default route handler for root path `/`
+app.get('/', (req, res) => {
+    res.send('Welcome to the API!');
+});
+
 //server connection
 app.listen(5000, () => {
     console.log("server running on localhost:5000")
