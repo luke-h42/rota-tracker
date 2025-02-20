@@ -92,7 +92,7 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post("api/auth/reset-password-link", {
+      const response = await axios.post("/api/auth/reset-password-link", {
         email: forgotEmail,
       });
       if (response.data.error) {
