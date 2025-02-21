@@ -17,16 +17,13 @@ mongoose.connect(process.env.MONGO_URL)
 
 //server definitions and middlewares
 const app = express();
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/subscribe/webhook', express.raw({ type: 'application/json' }));
 
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
-
-
-app.get('/favicon.ico', (req, res) => res.status(204));
 
 //using routes
 app.use('/api/auth', authRouter)
