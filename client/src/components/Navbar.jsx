@@ -3,6 +3,7 @@ import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom"; // Use NavLink instead of Link
 import { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "../../context/userContext";
+import Logo from "../assets/RotaTrackrLogo.png";
 
 export default function Navbar() {
   const { user, setUser } = useContext(UserContext);
@@ -62,7 +63,7 @@ export default function Navbar() {
         {/* Logo Section */}
         <div className="flex space-x-12 items-center ">
           <NavLink to="" className="text-xl">
-            Logo
+            <img src={Logo} alt="RotaTrackr Logo" className="h-12 w-12"></img>
           </NavLink>
         </div>
         {/* Mobile menu button  */}
