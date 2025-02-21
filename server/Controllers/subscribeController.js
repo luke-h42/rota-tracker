@@ -217,7 +217,7 @@ const handleSubscriptionUpdate = async (subId,  plan) => {
       console.log('Skipping subscription update due to incomplete session');
       return 
     }
-    if(!subscription.company_id) {
+    if(!subscription.company) {
       throw new Error('Company Id not found')
     }
     // Map the received plan (which is actually the product ID) to your internal plan
