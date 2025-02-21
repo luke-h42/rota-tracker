@@ -25,6 +25,9 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 
+
+app.get('/favicon.ico', (req, res) => res.status(204));
+
 //using routes
 app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)
