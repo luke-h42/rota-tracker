@@ -104,10 +104,8 @@ export const stripeEvents = async (req, res ) => {
     // Checkout session completed
     case "checkout.session.completed":
       const createdInvoice = event.data.object;
-      const subscribedUser = createdInvoice.metadata.companyId;
-      const planCreated = createdInvoice.metadata.plan;
       try {
-        await handlePaymentSuccess(createdInvoice, subscribedUser, planCreated);
+        await handlePaymentSuccess(createdInvoice, createdInvoice.metadata.companyId, createdInvoice.metadata.plan);
         res.status(200).send('Success');
       } catch (err) {
         console.error('Error handling payment success for created subscription', err);
@@ -117,9 +115,8 @@ export const stripeEvents = async (req, res ) => {
     // Subscription updated or renewed
     case "customer.subscription.updated":
       const subId = event.data.object.id;
-      const planUpdated = event.data.object.items.data[0].plan.product;
       try {
-        await handleSubscriptionUpate(subId, planUpdated)
+        await handleSubscriptionUpdate(subId, event.data.object.items.data[0].plan.product)
         res.status(200).send('Success');
       } catch (err) {
         console.error('Error handling subscription update', err);
@@ -211,13 +208,14 @@ const handlePaymentSuccess = async (invoice, companyId, plan) => {
 };
 
 // Handle subscription update including renewals
-const handleSubscriptionUpate = async (subId,  plan) => {
+const handleSubscriptionUpdate = async (subId,  plan) => {
   try {
     // Find the subscription by its Stripe subscription ID
     const subscription = await Subscription.findOne({ stripeSubscriptionId: subId }).populate('company');
 
     if (!subscription) {
-      throw new Error('Subscription not found for this company');
+      console.log('Skipping subscription update due to incomplete session');
+      return 
     }
     if(!subscription.company_id) {
       throw new Error('Company Id not found')
